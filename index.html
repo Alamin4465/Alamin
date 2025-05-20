@@ -2,7 +2,7 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>আয়-ব্যয় ট্র্যাকার</title>
+  <title>আয়-ব্যয় ব্যবস্থাপনা</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
@@ -11,9 +11,13 @@
 </head>
 <body>
   <div class="container">
-    <h2>আপনার আয়-ব্যয়</h2>
-    <div id="user-info"></div>
-    <div id="summary">
+						<div id="user-info"></div>
+
+						<div class="header-box">
+       				 <h1>আয়-ব্যয় ব্যবস্থাপনা সিস্টেম</h1>
+       					 <p>লেনদেনের হিসাব সংরক্ষণ করুন</p>
+						</div>
+    				<div id="summary">
       <p>মোট আয়: <span id="totalIncome">0</span> টাকা</p>
       <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
       <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
