@@ -139,7 +139,7 @@ body {
     margin: 1.5rem 0;
 }
 
-.Filter-tabel {
+..Filter-tabel {
   margin-top: 30px;
   background: #f9f9f9;
   padding: 20px;
@@ -148,7 +148,7 @@ body {
 }
 
 .Filter-tabel h2 {
-  text-align: center;
+  text-align: center; /* মাঝে রাখার জন্য */
   color: #007bff;
   font-weight: bold;
   margin-bottom: 20px;
@@ -156,12 +156,13 @@ body {
 
 #filterButtons {
   display: flex;
+  justify-content: flex-start; /* বামে রাখার জন্য */
   gap: 10px;
   margin-bottom: 20px;
 }
 
 .filterBtn {
-  background-color:  #007bff;
+  background-color: #ddd;
   color: #333;
   border: none;
   padding: 10px 20px;
@@ -172,12 +173,12 @@ body {
 }
 
 .filterBtn:hover {
-  background-color: Red;
+  background-color: #007bff;
   color: white;
 }
 
 .filterBtn.active {
-  background-color: red;
+  background-color: #007bff;
   color: white;
 }
 
@@ -199,19 +200,21 @@ body {
   color: white;
 }
 
-/* আয় - সবুজ ব্যাকগ্রাউন্ড */
+/* আয়: সবুজ ব্যাকগ্রাউন্ড ও সবুজ ফন্ট */
 tr.income-row {
   background-color: #e6f9ed;
-color:green;
-
+  color: #218838;
+  font-weight: bold;
 }
 
-/* ব্যয় - লাল ব্যাকগ্রাউন্ড */
+/* ব্যয়: হালকা লাল ব্যাকগ্রাউন্ড ও লাল ফন্ট */
 tr.expense-row {
   background-color: #ffecec;
-    color:red
+  color: #c82333;
+  font-weight: bold;
 }
 
+/* বাটন ডিজাইন */
 .editBtn, .deleteBtn {
   padding: 6px 12px;
   margin: 2px;
@@ -221,11 +224,13 @@ tr.expense-row {
   font-weight: bold;
 }
 
+/* এডিট বাটন – সবুজ */
 .editBtn {
   background-color: #28a745;
   color: white;
 }
 
+/* ডিলিট বাটন – লাল */
 .deleteBtn {
   background-color: #dc3545;
   color: white;
