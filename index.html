@@ -16,12 +16,17 @@
 
     <form id="transactionForm">
       <input type="date" id="date" required>
+
       <select id="type" required>
         <option value="">টাইপ নির্বাচন করুন</option>
         <option value="income">আয়</option>
         <option value="expense">ব্যয়</option>
       </select>
-      <input type="text" id="category" placeholder="ক্যাটেগরি (যেমন: খাবার, বেতন)" required>
+
+      <select id="category" required>
+        <option value="">ক্যাটেগরি নির্বাচন করুন</option>
+      </select>
+
       <input type="number" id="amount" placeholder="টাকার পরিমাণ" required>
       <button type="submit">সংরক্ষণ করুন</button>
     </form>
@@ -48,6 +53,31 @@
 
     <button id="logoutBtn">লগআউট</button>
   </div>
+
+  <script>
+    // ক্যাটেগরি লিস্ট
+    const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
+    const expenseCategories = [
+      "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
+      "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "হাস্পাতাল",
+      "ব্যক্তিগত", "অন্যান্য"
+    ];
+
+    // টাইপ অনুযায়ী ক্যাটেগরি লোড
+    document.getElementById("type").addEventListener("change", function () {
+      const type = this.value;
+      const categorySelect = document.getElementById("category");
+      categorySelect.innerHTML = '<option value="">ক্যাটেগরি নির্বাচন করুন</option>';
+
+      const categories = type === "income" ? incomeCategories : type === "expense" ? expenseCategories : [];
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        categorySelect.appendChild(option);
+      });
+    });
+  </script>
 
   <script src="script.js"></script>
 </body>
