@@ -11,17 +11,27 @@
 </head>
 <body>
   <div class="container">
-						<div id="user-info"></div>
-
-						<div class="header-box">
-       				 <h1>আয়-ব্যয় ব্যবস্থাপনা সিস্টেম</h1>
-       					 <p>লেনদেনের হিসাব সংরক্ষণ করুন</p>
-						</div>
-    				<div id="summary">
-      <p>মোট আয়: <span id="totalIncome">0</span> টাকা</p>
-      <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
-      <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
-    </div>
+	  
+	  <div id="user-info"></div>
+	  <div class="header-box">
+		  <h1>আয়-ব্যয় ব্যবস্থাপনা সিস্টেম</h1>
+		  <p>লেনদেনের হিসাব সংরক্ষণ করুন</p>
+	  </div>
+	  <div id="summary" class="summary-row">
+		  <div class="summary-item">
+			  <img src="income-icon.png" alt="আয়" class="summary-icon" />
+			  <div class="summary-amount" id="totalIncome">0</div>
+		  </div>
+		  <div class="summary-item">
+			  <img src="expense-icon.png" alt="ব্যয়" class="summary-icon" />
+			  <div class="summary-amount" id="totalExpense">0</div>
+		  </div>
+		  <div class="summary-item">
+			  <img src="balance-icon.png" alt="ব্যালেন্স" class="summary-icon" />
+			  <div class="summary-amount" id="balance">0</div>
+		  </div>
+	  </div>
+    				
 <div class="from_saving">
   <div class="from">  <form id="transactionForm">
       <input type="date" id="date" required>
