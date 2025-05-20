@@ -42,13 +42,8 @@ function loadTransactions(userId) {
         const row = document.createElement("tr");
         const amount = parseFloat(data.amount || 0);
 
-        if (type === "income") {
-  incomeTotal += amount;
-  row.classList.add("income-row");
-} else if (type === "expense") {
-  expenseTotal += amount;
-  row.classList.add("expense-row");
-}
+        if (type === "income") incomeTotal += amount;
+        else if (type === "expense") expenseTotal += amount;
 
         row.innerHTML = `
           <td>${data.date || ""}</td>
