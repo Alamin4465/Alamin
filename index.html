@@ -17,20 +17,25 @@
 		  <h1>আয়-ব্যয় ব্যবস্থাপনা সিস্টেম</h1>
 		  <p>লেনদেনের হিসাব সংরক্ষণ করুন</p>
 	  </div>
-	  <div id="summary" class="summary-row">
-		  <div class="summary-item">
-			  <img src="https://cdn-icons-png.flaticon.com/512/2331/2331949.png" alt="আয়" class="summary-icon" />
-			  <div class="summary-amount" id="totalIncome">0</div>
-		  </div>
-		  <div class="summary-item">
-			  <img src="https://cdn-icons-png.flaticon.com/512/1828/1828899.png" alt="ব্যয়" class="summary-icon" />
-			  <div class="summary-amount" id="totalExpense">0</div>
-		  </div>
-		  <div class="summary-item">
-			  <img src="https://cdn-icons-png.flaticon.com/512/2721/2721236.png" alt="ব্যালেন্স" class="summary-icon" />
-			  <div class="summary-amount" id="balance">0</div>
-		  </div>
-	  </div>
+	  <div id="summary" class="summary-container">
+		  <div class="summary-card">
+            <img src="https://cdn-icons-png.flaticon.com/128/3135/3135679.png" class="summary-icon" alt="আয়">
+            <h3>মোট আয়</h3>
+            <p id="totalIncome">৳ ০</p>
+        </div>
+
+        <div class="summary-card">
+            <img src="https://cdn-icons-png.flaticon.com/128/992/992700.png" class="summary-icon" alt="ব্যয়">
+            <h3>মোট ব্যয়</h3>
+            <p id="totalExpense">৳ ০</p>
+        </div>
+
+        <div class="summary-card">
+            <img src="https://cdn-icons-png.flaticon.com/128/3135/3135686.png" class="summary-icon" alt="ব্যালেন্স">
+            <h3>বর্তমান ব্যালেন্স</h3>
+            <p id="balance">৳ ০</p>
+        </div>
+    </div>
     				
 <div class="from_saving">
   <div class="from">  <form id="transactionForm">
