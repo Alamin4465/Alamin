@@ -1,6 +1,6 @@
 let currentFilter = "all";
 
-// ইউজার অথেন্টিকেশন চেক
+// ইউজার চেক
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "login.html";
@@ -11,7 +11,7 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// ইউজার ইনফো দেখানো
+// ইউজার ইনফো
 function loadUserInfo(user) {
   const userInfoDiv = document.getElementById("user-info");
   userInfoDiv.textContent = `স্বাগতম, ${user.email}`;
@@ -20,7 +20,7 @@ function loadUserInfo(user) {
 // ট্রান্সজেকশন লোড
 function loadTransactions(userId) {
   const db = firebase.firestore();
-  const transactionTableBody = document.querySelector("#transactionTable tbody");
+  const tbody = document.querySelector("#transactionTable tbody");
   const totalIncomeEl = document.getElementById("totalIncome");
   const totalExpenseEl = document.getElementById("totalExpense");
   const balanceEl = document.getElementById("balance");
@@ -32,34 +32,30 @@ function loadTransactions(userId) {
     .onSnapshot(snapshot => {
       let incomeTotal = 0;
       let expenseTotal = 0;
-      transactionTableBody.innerHTML = "";
+      tbody.innerHTML = "";
 
       snapshot.forEach(doc => {
         const data = doc.data();
         const type = data.type || "";
-
-        // ফিল্টার
-        if (currentFilter !== "all" && currentFilter !== type) return;
+        if (currentFilter !== "all" && type !== currentFilter) return;
 
         const row = document.createElement("tr");
-        const date = data.date || "";
-        const category = data.category || "";
         const amount = parseFloat(data.amount || 0);
 
         if (type === "income") incomeTotal += amount;
         else if (type === "expense") expenseTotal += amount;
 
         row.innerHTML = `
-          <td>${date}</td>
+          <td>${data.date || ""}</td>
           <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
-          <td>${category}</td>
+          <td>${data.category || ""}</td>
           <td>${amount}</td>
           <td>
             <button class="editBtn" data-id="${doc.id}">এডিট</button>
             <button class="deleteBtn" data-id="${doc.id}">ডিলিট</button>
           </td>
         `;
-        transactionTableBody.appendChild(row);
+        tbody.appendChild(row);
       });
 
       totalIncomeEl.textContent = incomeTotal;
@@ -68,20 +64,11 @@ function loadTransactions(userId) {
     });
 }
 
-// ফিল্টার চেঞ্জ হ্যান্ডলার
-document.getElementById("filterType")?.addEventListener("change", e => {
-  currentFilter = e.target.value;
-  const user = firebase.auth().currentUser;
-  if (user) {
-    loadTransactions(user.uid);
-  }
-});
-
-// ট্রান্সজেকশন যোগ
+// নতুন ট্রান্সজেকশন যোগ
 document.getElementById("transactionForm").addEventListener("submit", e => {
   e.preventDefault();
   const user = firebase.auth().currentUser;
-  if (!user) return alert("অনুগ্রহ করে প্রথমে লগইন করুন");
+  if (!user) return alert("অনুগ্রহ করে লগইন করুন");
 
   const date = document.getElementById("date").value;
   const type = document.getElementById("type").value;
@@ -104,80 +91,98 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
     });
 });
 
-// ডিলিট ও এডিট বাটন হ্যান্ডলিং
+// ডিলিট / এডিট বাটনের কাজ
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   if (!user) return;
 
   const docId = e.target.getAttribute("data-id");
-  const row = e.target.closest("tr");
+  const docRef = firebase.firestore().collection("users").doc(user.uid).collection("transactions").doc(docId);
 
   // ডিলিট
   if (e.target.classList.contains("deleteBtn")) {
-    if (confirm("আপনি কি নিশ্চিতভাবে এই লেনদেন মুছে ফেলতে চান?")) {
-      firebase.firestore()
-        .collection("users")
-        .doc(user.uid)
-        .collection("transactions")
-        .doc(docId)
-        .delete()
-        .then(() => {
-          alert("লেনদেন সফলভাবে ডিলিট হয়েছে!");
-        });
+    if (confirm("আপনি কি নিশ্চিত এই তথ্যটি ডিলিট করতে চান?")) {
+      docRef.delete().then(() => {
+        alert("লেনদেন ডিলিট হয়েছে");
+      });
     }
   }
 
   // এডিট
   if (e.target.classList.contains("editBtn")) {
-    const date = row.children[0].textContent;
-    const typeText = row.children[1].textContent;
-    const category = row.children[2].textContent;
-    const amount = row.children[3].textContent;
+    docRef.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById("date").value = data.date || "";
+        document.getElementById("type").value = data.type || "";
+        const event = new Event("change");
+        document.getElementById("type").dispatchEvent(event);
+        document.getElementById("category").value = data.category || "";
+        document.getElementById("amount").value = data.amount || "";
 
-    // ফর্মে মান বসানো
-    document.getElementById("date").value = date;
-    document.getElementById("type").value = typeText === "আয়" ? "income" : "expense";
+        // সাবমিট করলে আপডেট করবে
+        document.getElementById("transactionForm").onsubmit = function (ev) {
+          ev.preventDefault();
+          const updatedData = {
+            date: document.getElementById("date").value,
+            type: document.getElementById("type").value,
+            category: document.getElementById("category").value,
+            amount: parseFloat(document.getElementById("amount").value),
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          };
 
-    // ক্যাটেগরি রিফ্রেশ
-    const event = new Event("change");
-    document.getElementById("type").dispatchEvent(event);
-    document.getElementById("category").value = category;
-    document.getElementById("amount").value = amount;
-
-    // সাবমিট বোতাম পরিবর্তন
-    const submitBtn = document.querySelector("#transactionForm button[type='submit']");
-    submitBtn.textContent = "আপডেট করুন";
-
-    // আপডেট সাবমিশন হ্যান্ডলিং
-    submitBtn.onclick = function updateHandler(event) {
-      event.preventDefault();
-
-      const newDate = document.getElementById("date").value;
-      const newType = document.getElementById("type").value;
-      const newCategory = document.getElementById("category").value;
-      const newAmount = parseFloat(document.getElementById("amount").value);
-
-      if (confirm("আপনি কি নিশ্চিতভাবে এই লেনদেন আপডেট করতে চান?")) {
-        firebase.firestore()
-          .collection("users")
-          .doc(user.uid)
-          .collection("transactions")
-          .doc(docId)
-          .update({
-            date: newDate,
-            type: newType,
-            category: newCategory,
-            amount: newAmount
-          })
-          .then(() => {
-            alert("লেনদেন সফলভাবে আপডেট হয়েছে!");
+          docRef.update(updatedData).then(() => {
+            alert("লেনদেন আপডেট হয়েছে");
             document.getElementById("transactionForm").reset();
-            submitBtn.textContent = "সংরক্ষণ করুন";
-            submitBtn.onclick = null;
+            document.getElementById("transactionForm").onsubmit = null;
+            document.getElementById("transactionForm").addEventListener("submit", submitHandler);
           });
+        };
       }
-    };
+    });
   }
+});
+
+// আসল সাবমিট হ্যান্ডলার আলাদা রাখতে হবে (এডিটের পর পুনঃসেট করার জন্য)
+function submitHandler(e) {
+  e.preventDefault();
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  const date = document.getElementById("date").value;
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+  const amount = parseFloat(document.getElementById("amount").value);
+
+  firebase.firestore()
+    .collection("users")
+    .doc(user.uid)
+    .collection("transactions")
+    .add({
+      date,
+      type,
+      category,
+      amount,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      document.getElementById("transactionForm").reset();
+    });
+}
+document.getElementById("transactionForm").addEventListener("submit", submitHandler);
+
+// ফিল্টার বাটন হ্যান্ডলিং
+document.querySelectorAll(".filterBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    currentFilter = btn.getAttribute("data-filter");
+    const user = firebase.auth().currentUser;
+    if (user) {
+      loadTransactions(user.uid);
+    }
+  });
 });
 
 // লগআউট
