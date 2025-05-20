@@ -114,24 +114,33 @@ body {
     background: #0056b3;
 }
 
-savings-box-left {
-    background: #e8f5e9; /* হালকা গ্রিন */
+/* সঞ্চয় বক্স */
+.savings-box {
+    background: #e8f5e9;
+    width: 360px;
+    padding: 2.5rem;
     border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border: 2px solid #a5d6a7;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    text-align: center;
+    margin: 0 auto;
 }
 
-/* সঞ্চয় মিটার স্টাইল */
-.savings-meter {
-    background: #c8e6c9; /* গ্রিন শেড */
-    border-radius: 8px;
-    height: 18px;
-    margin: 15px 0;
+.savings-box h3 {
+    font-size: 1.6em;
+    margin-bottom: 1.2rem;
+    color: #1b5e20;
 }
 
-.savings-fill {
-    background: #4CAF50; /* ডার্ক গ্রিন */
-    height: 100%;
-    border-radius: 8px;
-    transition: width 0.5s;
+.savings-percentage {
+    font-size: 2.3em;
+    color: #2e7d32;
+    font-weight: 700;
+    margin: 1.5rem 0;
+}
+
+#savingsAmount {
+    font-size: 1.8em;
+    color: #1b5e20;
+    font-weight: 600;
 }
