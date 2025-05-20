@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>আয়-ব্যয় ট্র্যাকার</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>আপনার আয়-ব্যয়</h2>
+    <div id="user-info"></div>
+
+    <form id="transactionForm">
+      <input type="date" id="date" required>
+      <select id="type" required>
+        <option value="">টাইপ নির্বাচন করুন</option>
+        <option value="income">আয়</option>
+        <option value="expense">ব্যয়</option>
+      </select>
+      <input type="text" id="category" placeholder="ক্যাটেগরি (যেমন: খাবার, বেতন)" required>
+      <input type="number" id="amount" placeholder="টাকার পরিমাণ" required>
+      <button type="submit">সংরক্ষণ করুন</button>
+    </form>
+
+    <h3>লেনদেন তালিকা</h3>
+    <table id="transactionTable">
+      <thead>
+        <tr>
+          <th>তারিখ</th>
+          <th>টাইপ</th>
+          <th>ক্যাটেগরি</th>
+          <th>টাকা</th>
+          <th>অ্যাকশন</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="summary">
+      <p>মোট আয়: <span id="totalIncome">0</span> টাকা</p>
+      <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
+      <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
+    </div>
+
+    <button id="logoutBtn">লগআউট</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
