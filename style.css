@@ -1,9 +1,18 @@
+/* CSS রিসেট */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Kalpurush', Arial, sans-serif;
+    font-size: 1.05em;
+}
+
+/* মূল বডি স্টাইল */
 body {
-  font-family: 'SolaimanLipi', sans-serif;
-  background-color: #f2f2f2;
-  margin: 0;
-  padding: 20px;
-  color: #333;
+    background: #f0f8ff;
+    padding: 25px;
+    color: #2c3e50;
+    line-height: 1.7;
 }
 
 .container {
