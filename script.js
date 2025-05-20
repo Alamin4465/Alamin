@@ -17,14 +17,39 @@ function loadUserInfo(user) {
   userInfoDiv.textContent = `স্বাগতম, ${user.email}`;
 }
 
-// ট্রান্সজেকশন লোড
+// ট্রান্সজেকশন লোড + সবসময়কার সামারি
 function loadTransactions(userId) {
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
+
   const totalIncomeEl = document.getElementById("totalIncome");
   const totalExpenseEl = document.getElementById("totalExpense");
   const balanceEl = document.getElementById("balance");
 
+  // Step 1: সব ডেটা নিয়ে সামারি হিসাব করো
+  db.collection("users")
+    .doc(userId)
+    .collection("transactions")
+    .get()
+    .then(fullSnapshot => {
+      let fullIncome = 0;
+      let fullExpense = 0;
+
+      fullSnapshot.forEach(doc => {
+        const data = doc.data();
+        const amount = parseFloat(data.amount || 0);
+        if (data.type === "income") fullIncome += amount;
+        else if (data.type === "expense") fullExpense += amount;
+      });
+
+      const totalBalance = fullIncome - fullExpense;
+      const savingsRate = fullIncome > 0 ? (totalBalance / fullIncome) * 100 : 0;
+
+      document.getElementById("alwaysMonthlySavings").textContent = totalBalance.toFixed(2);
+      document.getElementById("alwaysSavingsPercentage").textContent = savingsRate.toFixed(2);
+    });
+
+  // Step 2: ফিল্টার অনুযায়ী টেবিল আপডেট করো
   db.collection("users")
     .doc(userId)
     .collection("transactions")
@@ -42,8 +67,13 @@ function loadTransactions(userId) {
         const row = document.createElement("tr");
         const amount = parseFloat(data.amount || 0);
 
-        if (type === "income") incomeTotal += amount;
-        else if (type === "expense") expenseTotal += amount;
+        if (type === "income") {
+          incomeTotal += amount;
+          row.classList.add("income-row");
+        } else if (type === "expense") {
+          expenseTotal += amount;
+          row.classList.add("expense-row");
+        }
 
         row.innerHTML = `
           <td>${data.date || ""}</td>
@@ -58,23 +88,16 @@ function loadTransactions(userId) {
         tbody.appendChild(row);
       });
 
-      // মোট আয়/ব্যয়/ব্যালেন্স আপডেট
       totalIncomeEl.textContent = incomeTotal.toFixed(2);
       totalExpenseEl.textContent = expenseTotal.toFixed(2);
       balanceEl.textContent = (incomeTotal - expenseTotal).toFixed(2);
-
-      // সবসময় দৃশ্যমান সঞ্চয়ের সারাংশ
-      const totalBalance = incomeTotal - expenseTotal;
-      const totalSavings = totalBalance;
-      const totalSavingsRate = incomeTotal > 0 ? (totalSavings / incomeTotal) * 100 : 0;
-
-      document.getElementById("alwaysMonthlySavings").textContent = totalSavings.toFixed(2);
-      document.getElementById("alwaysSavingsPercentage").textContent = totalSavingsRate.toFixed(2);
     });
 }
 
 // নতুন ট্রান্সজেকশন যোগ
-document.getElementById("transactionForm").addEventListener("submit", e => {
+document.getElementById("transactionForm").addEventListener("submit", submitHandler);
+
+function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return alert("অনুগ্রহ করে লগইন করুন");
@@ -98,9 +121,9 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
     .then(() => {
       document.getElementById("transactionForm").reset();
     });
-});
+}
 
-// ডিলিট / এডিট বাটনের কাজ
+// ডিলিট / এডিট
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -124,12 +147,10 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
         const data = doc.data();
         document.getElementById("date").value = data.date || "";
         document.getElementById("type").value = data.type || "";
-        const event = new Event("change");
-        document.getElementById("type").dispatchEvent(event);
+        document.getElementById("type").dispatchEvent(new Event("change"));
         document.getElementById("category").value = data.category || "";
         document.getElementById("amount").value = data.amount || "";
 
-        // সাবমিট করলে আপডেট করবে
         document.getElementById("transactionForm").onsubmit = function (ev) {
           ev.preventDefault();
           const updatedData = {
@@ -152,40 +173,11 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   }
 });
 
-// আসল সাবমিট হ্যান্ডলার আলাদা রাখতে হবে (এডিটের পর পুনঃসেট করার জন্য)
-function submitHandler(e) {
-  e.preventDefault();
-  const user = firebase.auth().currentUser;
-  if (!user) return;
-
-  const date = document.getElementById("date").value;
-  const type = document.getElementById("type").value;
-  const category = document.getElementById("category").value;
-  const amount = parseFloat(document.getElementById("amount").value);
-
-  firebase.firestore()
-    .collection("users")
-    .doc(user.uid)
-    .collection("transactions")
-    .add({
-      date,
-      type,
-      category,
-      amount,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    })
-    .then(() => {
-      document.getElementById("transactionForm").reset();
-    });
-}
-document.getElementById("transactionForm").addEventListener("submit", submitHandler);
-
 // ফিল্টার বাটন হ্যান্ডলিং
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-
     currentFilter = btn.getAttribute("data-filter");
     const user = firebase.auth().currentUser;
     if (user) {
