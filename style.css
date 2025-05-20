@@ -19,88 +19,55 @@ h2, h3 {
   text-align: center;
   color: #00695c;
 }
-
-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-form input, form select, form button {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-}
-
-form button {
-  background-color: #26a69a;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-form button:hover {
-  background-color: #00796b;
-}
-
-#transactionTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-}
-
-#transactionTable th, #transactionTable td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-}
-
-#transactionTable th {
-  background-color: #4db6ac;
-  color: white;
-}
-
-#transactionTable tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-#summary {
-  margin-top: 20px;
+#user-info {
+  color: #000080; /* নীল রঙ */
   font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+}
+
+.header-box {
+  background: #007bff;
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin: 25px 0;
   text-align: center;
-  font-size: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-button#logoutBtn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #e57373;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  transition: 0.3s;
+.header-box h1 {
+  margin: 0 0 10px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
 }
 
-button#logoutBtn:hover {
-  background-color: #c62828;
+.header-box p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px 0;
 }
 
-.deleteBtn {
-  background-color: #ef5350;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 5px;
-  cursor: pointer;
+.summary-item {
+  text-align: center;
+  width: 100px; /* প্রয়োজনমতো কম-বেশি করতে পারো */
 }
 
-.deleteBtn:hover {
-  background-color: #b71c1c;
+.summary-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.summary-amount {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
 }
