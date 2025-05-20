@@ -56,36 +56,23 @@
     </table>
 </div>
     <div class=filfer-mas"> 
-      <label>তারিখ নির্বাচন:
-  <input type="date" id="dateFilter">
-</label>
+      <div style="margin-top: 20px;">
+  <label>তারিখ বাছাই করুন: <input type="date" id="filterDate"></label>
+  <label>মাস বাছাই করুন: <input type="month" id="filterMonth"></label>
+  <button id="resetFilter">রিসেট</button>
+</div>
 
-<label>মাস নির্বাচন:
-  <input type="month" id="monthFilter">
-</label>
-
-<button id="resetFilter">ফিল্টার রিসেট করুন</button>
-
-<table id="transactionTable">
+<table id="filteredTable" border="1" style="margin-top: 20px; width: 100%; border-collapse: collapse;">
   <thead>
     <tr>
-      <th>তারিখ</th>
-      <th>বিভাগ</th>
-      <th>আয়ের ধরন</th>
-      <th>টাকা</th>
+      <th>তারিখ/মাস</th>
+      <th>ক্যাটাগরি</th>
+      <th>আয় টাকা</th>
+      <th>ব্যয় টাকা</th>
     </tr>
   </thead>
-  <tbody id="tableBody">
-    <!-- ডেটা এখানে আসবে -->
-  </tbody>
+  <tbody></tbody>
 </table>
-      <div id="summarySection" style="display: none;" class="summary">
-  <h3>মাসিক সারাংশ</h3>
-  <p>গত মাসের অবশিষ্ট: <span id="prevBalance">0</span> টাকা</p>
-  <p>এই মাসের আয়: <span id="currIncome">0</span> টাকা</p>
-  <p>এই মাসের ব্যয়: <span id="currExpense">0</span> টাকা</p>
-  <p><strong>মোট ব্যালেন্স: <span id="totalBalance">0</span> টাকা</strong></p>
-</div>
 </div>
 
     <button id="logoutBtn">লগআউট</button>
