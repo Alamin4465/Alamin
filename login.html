@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>লগইন</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>লগইন ফর্ম</h2>
+    <form id="loginForm">
+      <input type="email" id="loginEmail" placeholder="ইমেইল" required>
+      <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড" required>
+      <button type="submit">লগইন</button>
+      <p>অ্যাকাউন্ট নেই? <a href="register.html">রেজিস্টার করুন</a></p>
+    </form>
+  </div>
+
+  <script src="login-register.js"></script>
+</body>
+</html>
