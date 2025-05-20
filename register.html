@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>রেজিস্ট্রেশন</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>নিবন্ধন ফর্ম</h2>
+    <form id="registerForm">
+      <input type="text" id="name" placeholder="নাম" required>
+      <input type="email" id="email" placeholder="ইমেইল" required>
+      <input type="password" id="password" placeholder="পাসওয়ার্ড" required>
+      <input type="number" id="age" placeholder="বয়স" required>
+      <select id="gender" required>
+        <option value="">লিঙ্গ নির্বাচন করুন</option>
+        <option value="পুরুষ">পুরুষ</option>
+        <option value="মহিলা">মহিলা</option>
+        <option value="অন্যান্য">অন্যান্য</option>
+      </select>
+      <button type="submit">নিবন্ধন</button>
+      <p>অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
+    </form>
+  </div>
+
+  <script src="login-register.js"></script>
+</body>
+</html>
