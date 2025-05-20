@@ -1,30 +1,41 @@
-// Login check: লগইন না করলে login.html-এ পাঠানো হবে
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged(user => {
   if (!user) {
+    // ইউজার লগইন না থাকলে login.html-এ রিডাইরেক্ট
     window.location.href = "login.html";
   } else {
+    // ইউজার লগইন আছে, তাই UI লোড করো
+    document.querySelector(".container").style.display = "block";
     loadTransactions(user.uid);
+    loadUserInfo(user);
   }
 });
 
-const db = firebase.firestore();
-const form = document.getElementById("transactionForm");
-const transactionTableBody = document.querySelector("#transactionTable tbody");
-const summary = document.getElementById("summary");
-const logoutBtn = document.getElementById("logoutBtn");
+// UI প্রথমে লুকিয়ে রাখো index.html এ (style.css বা inline style দিয়ে)
+// যেমন: .container { display: none; } 
+// তারপর ইউজার লগইন হলে দেখাবে উপরের কোড
 
-// ট্রানজাকশন লোড করা
+function loadUserInfo(user) {
+  const userInfoDiv = document.getElementById("user-info");
+  userInfoDiv.textContent = `স্বাগতম, ${user.email}`;
+}
+
 function loadTransactions(userId) {
+  const db = firebase.firestore();
+  const transactionTableBody = document.querySelector("#transactionTable tbody");
+  const totalIncomeEl = document.getElementById("totalIncome");
+  const totalExpenseEl = document.getElementById("totalExpense");
+  const balanceEl = document.getElementById("balance");
+
   db.collection("users")
     .doc(userId)
     .collection("transactions")
     .orderBy("timestamp", "desc")
-    .onSnapshot((querySnapshot) => {
-      transactionTableBody.innerHTML = "";
+    .onSnapshot(snapshot => {
       let incomeTotal = 0;
       let expenseTotal = 0;
+      transactionTableBody.innerHTML = "";
 
-      querySnapshot.forEach((doc) => {
+      snapshot.forEach(doc => {
         const data = doc.data();
         const row = document.createElement("tr");
 
@@ -33,15 +44,12 @@ function loadTransactions(userId) {
         const category = data.category || "";
         const amount = parseFloat(data.amount || 0);
 
-        if (type === "আয়") {
-          incomeTotal += amount;
-        } else {
-          expenseTotal += amount;
-        }
+        if (type === "income") incomeTotal += amount;
+        else if (type === "expense") expenseTotal += amount;
 
         row.innerHTML = `
           <td>${date}</td>
-          <td>${type}</td>
+          <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
           <td>${category}</td>
           <td>${amount}</td>
           <td><button class="deleteBtn" data-id="${doc.id}">ডিলিট</button></td>
@@ -49,52 +57,21 @@ function loadTransactions(userId) {
         transactionTableBody.appendChild(row);
       });
 
-      const balance = incomeTotal - expenseTotal;
-      summary.innerHTML = `
-        মোট আয়: ${incomeTotal} টাকা |
-        মোট ব্যয়: ${expenseTotal} টাকা |
-        বর্তমান ব্যালেন্স: ${balance} টাকা
-      `;
+      totalIncomeEl.textContent = incomeTotal;
+      totalExpenseEl.textContent = expenseTotal;
+      balanceEl.textContent = incomeTotal - expenseTotal;
     });
 }
 
-// ট্রানজাকশন যোগ করা
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const user = firebase.auth().currentUser;
-  if (!user) return;
-
-  const userId = user.uid;
-  const date = form.date.value;
-  const type = form.type.value;
-  const category = form.category.value;
-  const amount = form.amount.value;
-
-  db.collection("users")
-    .doc(userId)
-    .collection("transactions")
-    .add({
-      date,
-      type,
-      category,
-      amount,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      userId
-    })
-    .then(() => {
-      form.reset();
-    });
-});
-
-// ডিলিট বাটনে ক্লিক করলে ডেটা মুছে ফেলা
-transactionTableBody.addEventListener("click", function (e) {
+// ডিলিট বাটন হ্যান্ডলিং
+document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   if (e.target.classList.contains("deleteBtn")) {
     const docId = e.target.getAttribute("data-id");
     const user = firebase.auth().currentUser;
     if (!user) return;
 
-    db.collection("users")
+    firebase.firestore()
+      .collection("users")
       .doc(user.uid)
       .collection("transactions")
       .doc(docId)
@@ -102,8 +79,35 @@ transactionTableBody.addEventListener("click", function (e) {
   }
 });
 
+// ফর্ম সাবমিট - নতুন ট্রানজাকশন যোগ করা
+document.getElementById("transactionForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const user = firebase.auth().currentUser;
+  if (!user) return alert("অনুগ্রহ করে প্রথমে লগইন করুন");
+
+  const date = document.getElementById("date").value;
+  const type = document.getElementById("type").value;
+  const category = document.getElementById("category").value;
+  const amount = parseFloat(document.getElementById("amount").value);
+
+  firebase.firestore()
+    .collection("users")
+    .doc(user.uid)
+    .collection("transactions")
+    .add({
+      date,
+      type,
+      category,
+      amount,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      document.getElementById("transactionForm").reset();
+    });
+});
+
 // লগআউট
-logoutBtn.addEventListener("click", () => {
+document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
   });
