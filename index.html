@@ -35,8 +35,13 @@
       <input type="number" id="amount" placeholder="টাকার পরিমাণ" required>
       <button type="submit">সংরক্ষণ করুন</button>
     </form>
-
+<div class="Filter-tabel">
     <h3>লেনদেন তালিকা</h3>
+  <select id="filterType">
+  <option value="all">সব</option>
+  <option value="income">শুধু আয়</option>
+  <option value="expense">শুধু ব্যয়</option>
+</select>
     <table id="transactionTable">
       <thead>
         <tr>
@@ -49,7 +54,7 @@
       </thead>
       <tbody></tbody>
     </table>
-
+</div>
 
     <button id="logoutBtn">লগআউট</button>
   </div>
