@@ -58,9 +58,18 @@ function loadTransactions(userId) {
         tbody.appendChild(row);
       });
 
-      totalIncomeEl.textContent = incomeTotal;
-      totalExpenseEl.textContent = expenseTotal;
-      balanceEl.textContent = incomeTotal - expenseTotal;
+      // মোট আয়/ব্যয়/ব্যালেন্স আপডেট
+      totalIncomeEl.textContent = incomeTotal.toFixed(2);
+      totalExpenseEl.textContent = expenseTotal.toFixed(2);
+      balanceEl.textContent = (incomeTotal - expenseTotal).toFixed(2);
+
+      // সবসময় দৃশ্যমান সঞ্চয়ের সারাংশ
+      const totalBalance = incomeTotal - expenseTotal;
+      const totalSavings = totalBalance;
+      const totalSavingsRate = incomeTotal > 0 ? (totalSavings / incomeTotal) * 100 : 0;
+
+      document.getElementById("alwaysMonthlySavings").textContent = totalSavings.toFixed(2);
+      document.getElementById("alwaysSavingsPercentage").textContent = totalSavingsRate.toFixed(2);
     });
 }
 
