@@ -13,6 +13,11 @@
   <div class="container">
     <h2>আপনার আয়-ব্যয়</h2>
     <div id="user-info"></div>
+    <div id="summary">
+      <p>মোট আয়: <span id="totalIncome">0</span> টাকা</p>
+      <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
+      <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
+    </div>
 
     <form id="transactionForm">
       <input type="date" id="date" required>
@@ -45,11 +50,6 @@
       <tbody></tbody>
     </table>
 
-    <div id="summary">
-      <p>মোট আয়: <span id="totalIncome">0</span> টাকা</p>
-      <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
-      <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
-    </div>
 
     <button id="logoutBtn">লগআউট</button>
   </div>
