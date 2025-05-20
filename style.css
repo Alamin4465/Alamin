@@ -132,14 +132,7 @@ body {
     color: #1b5e20;
 }
 
-.savings-percentage {
-    font-size: 2.3em;
-    color: #2e7d32;
-    font-weight: 700;
-    margin: 1.5rem 0;
-}
-
-#alwaysMonthlySavings {
+.savings{
     font-size: 2.3em;
     color: #2e7d32;
     font-weight: 700;
