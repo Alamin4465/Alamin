@@ -55,12 +55,18 @@
       <tbody></tbody>
     </table>
 </div>
-    <div class=filfer-mas"> <input type="month" id="monthFilter">
-<input type="date" id="dateFilter">
-<button id="applyDateFilter">ফিল্টার প্রয়োগ করুন</button>
+    <div class=filfer-mas"> 
+      <label>তারিখ নির্বাচন করুন:
+  <input type="date" id="dateFilter">
+</label>
 
-<h3>ফিল্টারকৃত লেনদেন</h3>
-<table id="filteredTransactionTable">
+<label>মাস নির্বাচন করুন:
+  <input type="month" id="monthFilter">
+</label>
+
+<button id="resetFilter">ফিল্টার রিসেট করুন</button>
+
+<table id="dataTable">
   <thead>
     <tr>
       <th>তারিখ/মাস</th>
@@ -70,7 +76,8 @@
     </tr>
   </thead>
   <tbody></tbody>
-</table></div>
+</table>
+</div>
 
     <button id="logoutBtn">লগআউট</button>
   </div>
