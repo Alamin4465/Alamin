@@ -56,13 +56,15 @@
     </table>
 </div>
     <div class=filfer-mas"> 
-      <div style="margin-top: 20px;">
-  <label>তারিখ বাছাই করুন: <input type="date" id="filterDate"></label>
-  <label>মাস বাছাই করুন: <input type="month" id="filterMonth"></label>
-  <button id="resetFilter">রিসেট</button>
+      <div>
+  <label>তারিখ নির্বাচন করুন:</label>
+  <input type="date" id="dateFilter" />
+  <label>মাস নির্বাচন করুন:</label>
+  <input type="month" id="monthFilter" />
+  <button id="resetFilterBtn">রিসেট</button>
 </div>
 
-<table id="filteredTable" border="1" style="margin-top: 20px; width: 100%; border-collapse: collapse;">
+<table id="filteredTable" border="1" style="margin-top: 10px; width: 100%;">
   <thead>
     <tr>
       <th>তারিখ/মাস</th>
@@ -73,6 +75,15 @@
   </thead>
   <tbody></tbody>
 </table>
+
+<!-- মাসিক সামারি -->
+<div id="monthlySummary" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; display: none;">
+  <h3>মাসিক সামারি</h3>
+  <p>গত মাসের টাকা: <span id="prevBalance">0</span> টাকা</p>
+  <p>বর্তমান মাসের আয়: <span id="monthlyIncome">0</span> টাকা</p>
+  <p>বর্তমান মাসের ব্যয়: <span id="monthlyExpense">0</span> টাকা</p>
+  <p><strong>মোট টাকা: <span id="totalBalance">0</span> টাকা</strong></p>
+</div>
 </div>
 
     <button id="logoutBtn">লগআউট</button>
