@@ -1,5 +1,6 @@
-let editingDocId = null;
+let currentFilter = "all";
 
+// ইউজার অথেন্টিকেশন চেক
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "login.html";
@@ -10,11 +11,13 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
+// ইউজার ইনফো দেখানো
 function loadUserInfo(user) {
   const userInfoDiv = document.getElementById("user-info");
   userInfoDiv.textContent = `স্বাগতম, ${user.email}`;
 }
 
+// ট্রান্সজেকশন লোড
 function loadTransactions(userId) {
   const db = firebase.firestore();
   const transactionTableBody = document.querySelector("#transactionTable tbody");
@@ -33,10 +36,13 @@ function loadTransactions(userId) {
 
       snapshot.forEach(doc => {
         const data = doc.data();
-        const row = document.createElement("tr");
-
-        const date = data.date || "";
         const type = data.type || "";
+
+        // ফিল্টার
+        if (currentFilter !== "all" && currentFilter !== type) return;
+
+        const row = document.createElement("tr");
+        const date = data.date || "";
         const category = data.category || "";
         const amount = parseFloat(data.amount || 0);
 
@@ -62,51 +68,16 @@ function loadTransactions(userId) {
     });
 }
 
-document.querySelector("#transactionTable tbody").addEventListener("click", e => {
+// ফিল্টার চেঞ্জ হ্যান্ডলার
+document.getElementById("filterType")?.addEventListener("change", e => {
+  currentFilter = e.target.value;
   const user = firebase.auth().currentUser;
-  if (!user) return;
-
-  if (e.target.classList.contains("deleteBtn")) {
-    const docId = e.target.getAttribute("data-id");
-    if (confirm("আপনি কি এই ট্রানজেকশন মুছে ফেলতে চান?")) {
-      firebase.firestore()
-        .collection("users")
-        .doc(user.uid)
-        .collection("transactions")
-        .doc(docId)
-        .delete()
-        .then(() => {
-          alert("ট্রানজেকশন সফলভাবে মুছে ফেলা হয়েছে!");
-        })
-        .catch(err => {
-          alert("মুছে ফেলতে সমস্যা হয়েছে: " + err.message);
-        });
-    }
-  }
-
-  if (e.target.classList.contains("editBtn")) {
-    editingDocId = e.target.getAttribute("data-id");
-    firebase.firestore()
-      .collection("users")
-      .doc(user.uid)
-      .collection("transactions")
-      .doc(editingDocId)
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          document.getElementById("date").value = data.date || "";
-          document.getElementById("type").value = data.type || "";
-          // ক্যাটেগরি লোড করার জন্য টাইপ onchange ট্রিগার করো
-          const event = new Event('change');
-          document.getElementById("type").dispatchEvent(event);
-          document.getElementById("category").value = data.category || "";
-          document.getElementById("amount").value = data.amount || "";
-        }
-      });
+  if (user) {
+    loadTransactions(user.uid);
   }
 });
 
+// ট্রান্সজেকশন যোগ
 document.getElementById("transactionForm").addEventListener("submit", e => {
   e.preventDefault();
   const user = firebase.auth().currentUser;
@@ -117,57 +88,99 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
   const category = document.getElementById("category").value;
   const amount = parseFloat(document.getElementById("amount").value);
 
-  const db = firebase.firestore();
+  firebase.firestore()
+    .collection("users")
+    .doc(user.uid)
+    .collection("transactions")
+    .add({
+      date,
+      type,
+      category,
+      amount,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      document.getElementById("transactionForm").reset();
+    });
+});
 
-  if (editingDocId) {
-    // আপডেট মোড
-    db.collection("users")
-      .doc(user.uid)
-      .collection("transactions")
-      .doc(editingDocId)
-      .update({
-        date,
-        type,
-        category,
-        amount,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => {
-        alert("ট্রানজেকশন সফলভাবে আপডেট হয়েছে!");
-        resetForm();
-      })
-      .catch(err => {
-        alert("আপডেট করতে সমস্যা হয়েছে: " + err.message);
-      });
-  } else {
-    // নতুন ট্রানজেকশন যোগ
-    db.collection("users")
-      .doc(user.uid)
-      .collection("transactions")
-      .add({
-        date,
-        type,
-        category,
-        amount,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => {
-        alert("নতুন ট্রানজেকশন সফলভাবে সংরক্ষিত হয়েছে!");
-        resetForm();
-      })
-      .catch(err => {
-        alert("সংরক্ষণ করতে সমস্যা হয়েছে: " + err.message);
-      });
+// ডিলিট ও এডিট বাটন হ্যান্ডলিং
+document.querySelector("#transactionTable tbody").addEventListener("click", e => {
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  const docId = e.target.getAttribute("data-id");
+  const row = e.target.closest("tr");
+
+  // ডিলিট
+  if (e.target.classList.contains("deleteBtn")) {
+    if (confirm("আপনি কি নিশ্চিতভাবে এই লেনদেন মুছে ফেলতে চান?")) {
+      firebase.firestore()
+        .collection("users")
+        .doc(user.uid)
+        .collection("transactions")
+        .doc(docId)
+        .delete()
+        .then(() => {
+          alert("লেনদেন সফলভাবে ডিলিট হয়েছে!");
+        });
+    }
+  }
+
+  // এডিট
+  if (e.target.classList.contains("editBtn")) {
+    const date = row.children[0].textContent;
+    const typeText = row.children[1].textContent;
+    const category = row.children[2].textContent;
+    const amount = row.children[3].textContent;
+
+    // ফর্মে মান বসানো
+    document.getElementById("date").value = date;
+    document.getElementById("type").value = typeText === "আয়" ? "income" : "expense";
+
+    // ক্যাটেগরি রিফ্রেশ
+    const event = new Event("change");
+    document.getElementById("type").dispatchEvent(event);
+    document.getElementById("category").value = category;
+    document.getElementById("amount").value = amount;
+
+    // সাবমিট বোতাম পরিবর্তন
+    const submitBtn = document.querySelector("#transactionForm button[type='submit']");
+    submitBtn.textContent = "আপডেট করুন";
+
+    // আপডেট সাবমিশন হ্যান্ডলিং
+    submitBtn.onclick = function updateHandler(event) {
+      event.preventDefault();
+
+      const newDate = document.getElementById("date").value;
+      const newType = document.getElementById("type").value;
+      const newCategory = document.getElementById("category").value;
+      const newAmount = parseFloat(document.getElementById("amount").value);
+
+      if (confirm("আপনি কি নিশ্চিতভাবে এই লেনদেন আপডেট করতে চান?")) {
+        firebase.firestore()
+          .collection("users")
+          .doc(user.uid)
+          .collection("transactions")
+          .doc(docId)
+          .update({
+            date: newDate,
+            type: newType,
+            category: newCategory,
+            amount: newAmount
+          })
+          .then(() => {
+            alert("লেনদেন সফলভাবে আপডেট হয়েছে!");
+            document.getElementById("transactionForm").reset();
+            submitBtn.textContent = "সংরক্ষণ করুন";
+            submitBtn.onclick = null;
+          });
+      }
+    };
   }
 });
 
-function resetForm() {
-  editingDocId = null;
-  document.getElementById("transactionForm").reset();
-  // ক্যাটেগরি অপশন রিসেট করতে চাইলে
-  document.getElementById("category").innerHTML = '<option value="">ক্যাটেগরি নির্বাচন করুন</option>';
-}
-
+// লগআউট
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
