@@ -6,9 +6,9 @@ firebase.auth().onAuthStateChanged(user => {
     window.location.href = "login.html";
   } else {
     document.querySelector(".container").style.display = "block";
+    loadSummary(user.uid);       // সামারি লোড
+    loadTransactions(user.uid);  // টেবিল লোড
     loadUserInfo(user);
-    loadSummary(user.uid); // স্থায়ী সামারি
-    loadTransactions(user.uid); // টেবিল + ফিল্টার সামারি
   }
 });
 
@@ -18,7 +18,7 @@ function loadUserInfo(user) {
   userInfoDiv.textContent = `স্বাগতম, ${user.email}`;
 }
 
-// সার্বিক সঞ্চয় সামারি (সবসময় একই থাকবে)
+// সব ডেটা নিয়ে সামারি হিসাব
 function loadSummary(userId) {
   const db = firebase.firestore();
   db.collection("users")
@@ -44,7 +44,7 @@ function loadSummary(userId) {
     });
 }
 
-// টেবিল + ফিল্টার অনুযায়ী সামারি
+// ফিল্টার অনুযায়ী টেবিল আপডেট (রিয়েলটাইম)
 function loadTransactions(userId) {
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
@@ -126,7 +126,7 @@ function submitHandler(e) {
     });
 }
 
-// এডিট / ডিলিট
+// ডিলিট / এডিট
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -134,7 +134,6 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   const docId = e.target.getAttribute("data-id");
   const docRef = firebase.firestore().collection("users").doc(user.uid).collection("transactions").doc(docId);
 
-  // ডিলিট
   if (e.target.classList.contains("deleteBtn")) {
     if (confirm("আপনি কি নিশ্চিত এই তথ্যটি ডিলিট করতে চান?")) {
       docRef.delete().then(() => {
@@ -143,7 +142,6 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
     }
   }
 
-  // এডিট
   if (e.target.classList.contains("editBtn")) {
     docRef.get().then(doc => {
       if (doc.exists) {
@@ -176,7 +174,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   }
 });
 
-// ফিল্টার বাটন
+// ফিল্টার বাটন হ্যান্ডলিং
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
@@ -184,7 +182,8 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
     currentFilter = btn.getAttribute("data-filter");
     const user = firebase.auth().currentUser;
     if (user) {
-      loadTransactions(user.uid); // শুধু টেবিল আপডেট হবে
+      loadTransactions(user.uid);  // শুধুমাত্র টেবিল আপডেট
+      // loadSummary(user.uid);  <-- এখানে আর সামারি কল করো না, তাই সামারি অপরিবর্তিত থাকবে
     }
   });
 });
