@@ -1,63 +1,78 @@
-document.getElementById("applyDateFilter").addEventListener("click", () => {
-const monthValue = document.getElementById("monthFilter").value;
-const dateValue = document.getElementById("dateFilter").value;
-const user = firebase.auth().currentUser;
+const filterDateInput = document.getElementById("filterDate");
+const filterMonthInput = document.getElementById("filterMonth");
+const resetFilterBtn = document.getElementById("resetFilter");
+const filteredTableBody = document.querySelector("#filteredTable tbody");
 
-if (!user) return;
-
-const userId = user.uid;
-const db = firebase.firestore();
-const filteredTableBody = document.querySelector("#filteredTransactionTable tbody");
-filteredTableBody.innerHTML = "";
-
-db.collection("users")
-.doc(userId)
-.collection("transactions")
-.orderBy("timestamp", "desc")
-.get()
-.then(snapshot => {
-let filteredData = [];
-snapshot.forEach(doc => {
-const data = doc.data();
-const date = data.date;
-
-if (monthValue && date.startsWith(monthValue)) {  
-      filteredData.push(data);  
-    } else if (dateValue && date === dateValue) {  
-      filteredData.push(data);  
-    }  
-  });  
-
-  let totalIncome = 0;  
-  let totalExpense = 0;  
-
-  filteredData.forEach(data => {  
-    const row = document.createElement("tr");  
-    const incomeAmount = data.type === "income" ? data.amount : "";  
-    const expenseAmount = data.type === "expense" ? data.amount : "";  
-
-    if (data.type === "income") totalIncome += parseFloat(data.amount);  
-    if (data.type === "expense") totalExpense += parseFloat(data.amount);  
-
-    row.innerHTML = `  
-      <td>${data.date}</td>  
-      <td>${data.category}</td>  
-      <td>${incomeAmount}</td>  
-      <td>${expenseAmount}</td>  
-    `;  
-    filteredTableBody.appendChild(row);  
-  });  
-
-  const summaryRow = document.createElement("tr");  
-  summaryRow.innerHTML = `  
-    <td colspan="2"><strong>মোট</strong></td>  
-    <td><strong>${totalIncome}</strong></td>  
-    <td><strong>${totalExpense}</strong></td>  
-  `;  
-  filteredTableBody.appendChild(summaryRow);  
+filterDateInput.addEventListener("change", () => {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    filterByDate(user.uid, filterDateInput.value);
+  }
 });
 
+filterMonthInput.addEventListener("change", () => {
+  const user = firebase.auth().currentUser;
+  if (user) {
+    filterByMonth(user.uid, filterMonthInput.value);
+  }
 });
 
-এই রকম কোড দিলে আসে
+resetFilterBtn.addEventListener("click", () => {
+  filterDateInput.value = "";
+  filterMonthInput.value = "";
+  filteredTableBody.innerHTML = "";
+});
 
+function filterByDate(userId, date) {
+  const db = firebase.firestore();
+  const start = new Date(date);
+  const end = new Date(date);
+  end.setDate(end.getDate() + 1);
+
+  db.collection("users")
+    .doc(userId)
+    .collection("transactions")
+    .where("timestamp", ">=", start)
+    .where("timestamp", "<", end)
+    .orderBy("timestamp")
+    .get()
+    .then(snapshot => {
+      showFilteredResults(snapshot, date);
+    });
+}
+
+function filterByMonth(userId, month) {
+  const db = firebase.firestore();
+  const [year, mon] = month.split("-");
+  const start = new Date(`${year}-${mon}-01`);
+  const end = new Date(start);
+  end.setMonth(end.getMonth() + 1);
+
+  db.collection("users")
+    .doc(userId)
+    .collection("transactions")
+    .where("timestamp", ">=", start)
+    .where("timestamp", "<", end)
+    .orderBy("timestamp")
+    .get()
+    .then(snapshot => {
+      showFilteredResults(snapshot, month);
+    });
+}
+
+function showFilteredResults(snapshot, label) {
+  filteredTableBody.innerHTML = "";
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    const income = data.type === "income" ? data.amount : "";
+    const expense = data.type === "expense" ? data.amount : "";
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${data.date || label}</td>
+      <td>${data.category || ""}</td>
+      <td>${income}</td>
+      <td>${expense}</td>
+    `;
+    filteredTableBody.appendChild(row);
+  });
+}
