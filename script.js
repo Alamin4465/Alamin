@@ -73,13 +73,25 @@ transactionTableBody.addEventListener("click", e => {
     const user = firebase.auth().currentUser;
     if (!user) return;
 
-    if (confirm("আপনি কি এই ট্রানজেকশন মুছে ফেলতে চান?")) {
-      db.collection("users")
-        .doc(user.uid)
-        .collection("transactions")
-        .doc(docId)
-        .delete();
-    }
+    if (e.target.classList.contains("deleteBtn")) {
+  const docId = e.target.getAttribute("data-id");
+  const user = firebase.auth().currentUser;
+  if (!user) return;
+
+  if (confirm("আপনি কি এই ট্রানজেকশন মুছে ফেলতে চান?")) {
+    db.collection("users")
+      .doc(user.uid)
+      .collection("transactions")
+      .doc(docId)
+      .delete()
+      .then(() => {
+        alert("ট্রানজেকশন সফলভাবে মুছে ফেলা হয়েছে!");
+      })
+      .catch(err => {
+        alert("মুছে ফেলতে সমস্যা হয়েছে: " + err.message);
+      });
+  }
+}
   }
 
   // এডিট বাটনের হ্যান্ডলার
@@ -162,26 +174,26 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
   }
 
   if (editingDocId) {
-    // আপডেট মোড
-    db.collection("users")
-      .doc(user.uid)
-      .collection("transactions")
-      .doc(editingDocId)
-      .update({
-        date,
-        type,
-        category,
-        amount,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-      .then(() => {
-        alert("ট্রানজেকশন সফলভাবে আপডেট হয়েছে!");
-        resetForm();
-      })
-      .catch(err => {
-        alert("আপডেট করতে সমস্যা হয়েছে: " + err.message);
-      });
-  } else {
+  // আপডেট মোড
+  db.collection("users")
+    .doc(user.uid)
+    .collection("transactions")
+    .doc(editingDocId)
+    .update({
+      date,
+      type,
+      category,
+      amount,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      alert("ট্রানজেকশন সফলভাবে আপডেট হয়েছে!");
+      resetForm();
+    })
+    .catch(err => {
+      alert("আপডেট করতে সমস্যা হয়েছে: " + err.message);
+    });
+}else {
     // নতুন ট্রানজেকশন যোগ করা
     db.collection("users")
       .doc(user.uid)
