@@ -148,6 +148,7 @@ body {
 }
 
 .Filter-tabel h2 {
+  text-align: center;
   color: #007bff;
   font-weight: bold;
   margin-bottom: 20px;
@@ -160,7 +161,7 @@ body {
 }
 
 .filterBtn {
-  background-color: #ddd;
+  background-color:  #007bff;
   color: #333;
   border: none;
   padding: 10px 20px;
@@ -171,12 +172,12 @@ body {
 }
 
 .filterBtn:hover {
-  background-color: #007bff;
+  background-color: Red;
   color: white;
 }
 
 .filterBtn.active {
-  background-color: #007bff;
+  background-color: red;
   color: white;
 }
 
@@ -201,11 +202,14 @@ body {
 /* আয় - সবুজ ব্যাকগ্রাউন্ড */
 tr.income-row {
   background-color: #e6f9ed;
+color:green;
+
 }
 
 /* ব্যয় - লাল ব্যাকগ্রাউন্ড */
 tr.expense-row {
   background-color: #ffecec;
+    color:red
 }
 
 .editBtn, .deleteBtn {
@@ -217,7 +221,7 @@ tr.expense-row {
   font-weight: bold;
 }
 
-}.editBtn {
+.editBtn {
   background-color: #28a745;
   color: white;
 }
