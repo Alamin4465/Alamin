@@ -1,99 +1,84 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Income-Expense Tracker</title>
-  <style>
-    body {
-      font-family: 'SolaimanLipi', Arial, sans-serif;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 10px;
-    }
-    #summary {
-      padding: 10px;
-      background-color: #e0f7fa;
-      border: 1px solid #00acc1;
-      border-radius: 5px;
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
-    button {
-      margin: 5px 5px 15px 0;
-      padding: 6px 12px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    form > * {
-      margin: 5px 0;
-      display: block;
-      width: 100%;
-      max-width: 300px;
-      padding: 8px;
-      font-size: 14px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
-    }
-    th, td {
-      padding: 8px;
-      text-align: left;
-    }
-    .action-btn {
-      margin-right: 5px;
-      padding: 4px 8px;
-      font-size: 13px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>আয়-ব্যয় ট্র্যাকার</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
 </head>
 <body>
+  <div class="container">
+    <h2>আপনার আয়-ব্যয়</h2>
+    <div id="user-info"></div>
 
-  <div id="summary">লোড হচ্ছে...</div>
+    <form id="transactionForm">
+      <input type="date" id="date" required>
 
-  <div>
-    <button id="filterAll">সব</button>
-    <button id="filterIncome">আয়</button>
-    <button id="filterExpense">ব্যয়</button>
+      <select id="type" required>
+        <option value="">টাইপ নির্বাচন করুন</option>
+        <option value="income">আয়</option>
+        <option value="expense">ব্যয়</option>
+      </select>
+
+      <select id="category" required>
+        <option value="">ক্যাটেগরি নির্বাচন করুন</option>
+      </select>
+
+      <input type="number" id="amount" placeholder="টাকার পরিমাণ" required>
+      <button type="submit">সংরক্ষণ করুন</button>
+    </form>
+
+    <h3>লেনদেন তালিকা</h3>
+    <table id="transactionTable">
+      <thead>
+        <tr>
+          <th>তারিখ</th>
+          <th>টাইপ</th>
+          <th>ক্যাটেগরি</th>
+          <th>টাকা</th>
+          <th>অ্যাকশন</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="summary">
+      <p>মোট আয়: <span id="totalIncome">0</span> টাকা</p>
+      <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
+      <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
+    </div>
+
+    <button id="logoutBtn">লগআউট</button>
   </div>
 
-  <form id="transactionForm">
-    <input type="date" id="date" name="date" required />
-    <select id="type" name="type" required>
-      <option value="" disabled selected>ধরন নির্বাচন করুন</option>
-      <option value="আয়">আয়</option>
-      <option value="ব্যয়">ব্যয়</option>
-    </select>
-    <input type="text" id="category" name="category" placeholder="বিভাগ" required />
-    <input type="number" id="amount" name="amount" placeholder="টাকা" step="0.01" min="0" required />
-    <button type="submit">সাবমিট</button>
-  </form>
+  <script>
+    // ক্যাটেগরি লিস্ট
+    const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
+    const expenseCategories = [
+      "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
+      "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "হাস্পাতাল",
+      "ব্যক্তিগত", "অন্যান্য"
+    ];
 
-  <table id="transactionTable">
-    <thead>
-      <tr>
-        <th>তারিখ</th>
-        <th>ধরন</th>
-        <th>বিভাগ</th>
-        <th>টাকা</th>
-        <th>অ্যাকশন</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    // টাইপ অনুযায়ী ক্যাটেগরি লোড
+    document.getElementById("type").addEventListener("change", function () {
+      const type = this.value;
+      const categorySelect = document.getElementById("category");
+      categorySelect.innerHTML = '<option value="">ক্যাটেগরি নির্বাচন করুন</option>';
 
-  <button id="logoutBtn" style="margin-top: 20px; background:#f44336; color:#fff;">লগআউট</button>
+      const categories = type === "income" ? incomeCategories : type === "expense" ? expenseCategories : [];
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        categorySelect.appendChild(option);
+      });
+    });
+  </script>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script> <!-- তোমার ফায়ারবেস কনফিগ ফাইল -->
   <script src="script.js"></script>
-
 </body>
 </html>
