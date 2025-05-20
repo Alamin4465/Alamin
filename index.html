@@ -56,26 +56,28 @@
     </table>
 </div>
     <div class=filfer-mas"> 
-      <label>তারিখ নির্বাচন করুন:
+      <label>তারিখ নির্বাচন:
   <input type="date" id="dateFilter">
 </label>
 
-<label>মাস নির্বাচন করুন:
+<label>মাস নির্বাচন:
   <input type="month" id="monthFilter">
 </label>
 
 <button id="resetFilter">ফিল্টার রিসেট করুন</button>
 
-<table id="dataTable">
+<table id="transactionTable">
   <thead>
     <tr>
-      <th>তারিখ/মাস</th>
-      <th>ক্যাটাগরি</th>
-      <th>আয় টাকা</th>
-      <th>ব্যয় টাকা</th>
+      <th>তারিখ</th>
+      <th>বিভাগ</th>
+      <th>আয়ের ধরন</th>
+      <th>টাকা</th>
     </tr>
   </thead>
-  <tbody></tbody>
+  <tbody id="tableBody">
+    <!-- ডেটা এখানে আসবে -->
+  </tbody>
 </table>
 </div>
 
