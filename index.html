@@ -18,8 +18,8 @@
       <p>মোট ব্যয়: <span id="totalExpense">0</span> টাকা</p>
       <p>বর্তমান ব্যালেন্স: <span id="balance">0</span> টাকা</p>
     </div>
-
-    <form id="transactionForm">
+<div class="from_saving">
+  <div class="from">  <form id="transactionForm">
       <input type="date" id="date" required>
 
       <select id="type" required>
@@ -35,6 +35,13 @@
       <input type="number" id="amount" placeholder="টাকার পরিমাণ" required>
       <button type="submit">সংরক্ষণ করুন</button>
     </form>
+  </div>
+  <div id="alwaysSavings" style="margin-top: 20px; border: 2px solid #4CAF50; padding: 10px;">
+  <h3>সর্বমোট সঞ্চয়</h3>
+    <p><span id="alwaysSavingsPercentage">0</span>%</p>
+ <p> <span id="alwaysMonthlySavings">0</span> টাকT</p>
+</div>
+</div>
 <div class="Filter-tabel">
     <h3>লেনদেন তালিকা</h3>
   <div id="filterButtons">
