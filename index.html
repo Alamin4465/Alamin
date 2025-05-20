@@ -37,29 +37,27 @@
         </div>
     </div>
     				
-<div class="from_saving">
-  <div class="from">  <form id="transactionForm">
-      <input type="date" id="date" required>
+<div class="form-container">
+  <form id="transactionForm">
+      <input class="form-input "type="date" id="date" required>
 
-      <select id="type" required>
+      <select class="form-input "id="type" required >
         <option value="">টাইপ নির্বাচন করুন</option>
         <option value="income">আয়</option>
         <option value="expense">ব্যয়</option>
       </select>
 
-      <select id="category" required>
-        <option value="">ক্যাটেগরি নির্বাচন করুন</option>
+      <select class="form-input" id="category" required>
+        <option value="" class="form-input">ক্যাটেগরি নির্বাচন করুন</option>
       </select>
 
-      <input type="number" id="amount" placeholder="টাকার পরিমাণ" required>
-      <button type="submit">সংরক্ষণ করুন</button>
+      <input type="number"class="form-input" id="amount" placeholder="টাকার পরিমাণ" required>
+      <button type="submit" class="form-button">সংরক্ষণ করুন</button>
     </form>
-  </div>
-  <div>
+  <div class="savings-box">
     <h3>মাসিক সঞ্চয়:</h3>
-   <p><span id="alwaysSavingsPercentage">0.00</span>%</p>
-  <p><span id="alwaysMonthlySavings">0.00</span> টাকা</p>
-  
+<div class="savings-percentage" id="alwaysSavingsPercentage">0%</div>
+  <div id="alwaysMonthlySavings">0.00 টাকা</div>
 </div>
 </div>
 <div class="Filter-tabel">
