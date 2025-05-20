@@ -47,6 +47,14 @@ h2, h3 {
   font-size: 1.1rem;
   font-weight: 500;
 }
+
+.summary-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 35px 0;
+    flex-wrap: wrap;
+}
 .summary-card {
     background: white;
     padding: 2rem;
