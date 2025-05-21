@@ -3,7 +3,7 @@ let currentFilter = null;
 function toBanglaNumber(num) {
   const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
   let fixed = parseFloat(num).toFixed(0); // Remove decimals
-  return fixed.split('').map(d => banglaDigits[d] || d).join('') + " টাকা";
+  return fixed.split('').map(d => banglaDigits[d] || d).join('');
 }
 
 // ইউজার লগইন থাকলে ডেটা লোড
