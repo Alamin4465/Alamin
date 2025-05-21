@@ -110,34 +110,19 @@
   <p><strong>মোট টাকা: <span id="totalBalance">0</span> টাকা</strong></p>
 </div>
 </div>
+	  <div id="categoryChart" style="max-width: 600px; margin: 0 auto;"></div>
+<div id="monthlyChart" style="max-width: 800px; margin: 50px auto;"></div>
+
+<!-- ApexCharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<!-- আপনার আলাদা স্ক্রিপ্ট ফাইল লোড -->
+
 
     <button id="logoutBtn">লগআউট</button>
   </div>
 
-  <script>
-    // ক্যাটেগরি লিস্ট
-    const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
-    const expenseCategories = [
-      "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
-      "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "হাস্পাতাল",
-      "ব্যক্তিগত", "অন্যান্য"
-    ];
-
-    // টাইপ অনুযায়ী ক্যাটেগরি লোড
-    document.getElementById("type").addEventListener("change", function () {
-      const type = this.value;
-      const categorySelect = document.getElementById("category");
-      categorySelect.innerHTML = '<option value="">ক্যাটেগরি নির্বাচন করুন</option>';
-
-      const categories = type === "income" ? incomeCategories : type === "expense" ? expenseCategories : [];
-      categories.forEach(cat => {
-        const option = document.createElement("option");
-        option.value = cat;
-        option.textContent = cat;
-        categorySelect.appendChild(option);
-      });
-    });
-  </script>
+<script src="charts.js"></script>
 <script src="monthday.js"></script>
   <script src="script.js"></script>
 </body>
