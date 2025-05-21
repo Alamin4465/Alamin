@@ -1,101 +1,50 @@
-function renderCategoryChart(userId) {
-  const db = firebase.firestore();
-  db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
-    const incomeCategories = {};
-    const expenseCategories = {};
+google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(drawCategoryChart);
 
-    snapshot.forEach(doc => {
-      const { type, category, amount } = doc.data();
-      if (type === "income") {
-        incomeCategories[category] = (incomeCategories[category] || 0) + parseFloat(amount);
-      } else if (type === "expense") {
-        expenseCategories[category] = (expenseCategories[category] || 0) + parseFloat(amount);
-      }
-    });
+function drawCategoryChart() {
+  const data = google.visualization.arrayToDataTable([
+    ['ক্যাটেগরি', 'টাকা'],
+    ['খাদ্য', 1000],
+    ['ভাড়া', 800],
+    ['পরিবহন', 400],
+    ['অন্যান্য', 300]
+  ]);
 
-    const labels = Array.from(new Set([...Object.keys(incomeCategories), ...Object.keys(expenseCategories)]));
-    const incomeData = labels.map(label => incomeCategories[label] || 0);
-    const expenseData = labels.map(label => expenseCategories[label] || 0);
+  const options = {
+    title: 'খরচের ক্যাটেগরি অনুযায়ী বন্টন',
+    is3D: true,
+    backgroundColor: 'transparent'
+  };
 
-    const options = {
-      chart: {
-        type: 'donut',
-        width: 500,
-        background: 'transparent'
-      },
-      series: [...incomeData, ...expenseData],
-      labels: [...labels.map(l => "আয় - " + l), ...labels.map(l => "ব্যয় - " + l)],
-      title: { text: "আয় ও ব্যয় (ক্যাটাগরি অনুযায়ী)" },
-      plotOptions: {
-        pie: {
-          donut: { size: '45%' }
-        }
-      }
-    };
-
-    const chart = new ApexCharts(document.querySelector("#categoryChart"), options);
-    chart.render();
-  });
+  const chart = new google.visualization.PieChart(document.getElementById('categoryChart'));
+  chart.draw(data, options);
 }
 
-function render3DMonthlyLevelChart(userId) {
-  const db = firebase.firestore();
-  db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
-    const monthData = {};
+// ApexCharts Bar Chart (মাসভিত্তিক আয়/ব্যয়)
+document.addEventListener("DOMContentLoaded", function () {
+  const options = {
+    chart: {
+      type: 'bar',
+      height: 400,
+      background: 'transparent'
+    },
+    series: [{
+      name: 'আয়',
+      data: [4000, 3000, 4500, 5000, 4700, 5200]
+    }, {
+      name: 'ব্যয়',
+      data: [2800, 2300, 3500, 3000, 3900, 3100]
+    }],
+    xaxis: {
+      categories: ['জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন']
+    },
+    colors: ['#28a745', '#dc3545'],
+    title: {
+      text: 'মাসভিত্তিক আয় ও ব্যয়',
+      align: 'center'
+    }
+  };
 
-    snapshot.forEach(doc => {
-      const { date, type, amount } = doc.data();
-      const month = (date || "").substring(0, 7);
-      if (!monthData[month]) monthData[month] = { income: 0, expense: 0 };
-
-      if (type === "income") monthData[month].income += parseFloat(amount);
-      else if (type === "expense") monthData[month].expense += parseFloat(amount);
-    });
-
-    const months = Object.keys(monthData).sort();
-    const dataArray = [['মাস', 'আয়', { role: 'style' }, { role: 'annotation' }, 'ব্যয়', { role: 'style' }, { role: 'annotation' }, 'সঞ্চয়', { role: 'style' }, { role: 'annotation' }]];
-
-    months.forEach(month => {
-      const income = monthData[month].income;
-      const expense = monthData[month].expense;
-      const saving = income - expense;
-
-      dataArray.push([
-        month,
-        income, 'color: green', income.toFixed(0) + '৳',
-        expense, 'color: red', expense.toFixed(0) + '৳',
-        saving, 'color: gold', saving.toFixed(0) + '৳'
-      ]);
-    });
-
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(() => {
-      const data = google.visualization.arrayToDataTable(dataArray);
-
-      const options = {
-        title: 'মাসভিত্তিক আয়, ব্যয় ও সঞ্চয় (৩D লেভেল)',
-        isStacked: false,
-        height: 500,
-        width: 600,
-        bar: { groupWidth: '75%' },
-        legend: { position: 'top' },
-        vAxis: { minValue: 0 },
-        backgroundColor: 'transparent',
-        annotations: {
-          alwaysOutside: true
-        }
-      };
-
-      const chart = new google.visualization.ColumnChart(document.getElementById('monthly3dChart'));
-      chart.draw(data, options);
-    });
-  });
-}
-
-// ইউজার লগইন চেক করে চার্ট রেন্ডারিং
-firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    renderCategoryChart(user.uid);
-    render3DMonthlyLevelChart(user.uid);
-  }
+  const chart = new ApexCharts(document.querySelector("#monthly3dChart"), options);
+  chart.render();
 });
