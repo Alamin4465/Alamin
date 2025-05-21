@@ -239,6 +239,7 @@ tr.expense-row {
 
 
 
+
 #charts-container {
   display: flex;
   justify-content: center;
@@ -250,7 +251,8 @@ tr.expense-row {
 
 #categoryChart,
 #monthly3dChart {
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
   height: 500px;
   background: transparent;
 }
