@@ -1,12 +1,5 @@
-let currentFilter = null;
+let currentFilter = null; // শুরুতে কিছুই দেখাবে না
 
-function toBanglaNumber(num) {
-  const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-  let fixed = parseFloat(num).toFixed(0); // Remove decimals
-  return fixed.split('').map(d => banglaDigits[d] || d).join('') + " ৳";
-}
-
-// ইউজার লগইন থাকলে ডেটা লোড
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "login.html";
@@ -17,12 +10,27 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// ইউজার তথ্য দেখানো
+// বাংলা সংখ্যা রূপান্তর
+function toBanglaNumber(num) {
+  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  let fixed = parseInt(num) || 0;
+  return fixed.toString().split('').map(d => banglaDigits[d] || d).join('') + " ৳";
+}
+
+function toBanglaPercentage(num) {
+  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯','.'];
+  return parseFloat(num).toFixed(2).split('').map(d => {
+    if (d === '.') return '.';
+    return banglaDigits[d] || d;
+  }).join('') + " %";
+}
+
+// ইউজার তথ্য
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
 }
 
-// সব ডেটা ভিত্তিক সামারি লোড
+// সামারি
 function loadFullSummary(userId) {
   const db = firebase.firestore();
   db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
@@ -42,13 +50,15 @@ function loadFullSummary(userId) {
     document.getElementById("totalIncome").textContent = toBanglaNumber(totalIncome);
     document.getElementById("totalExpense").textContent = toBanglaNumber(totalExpense);
     document.getElementById("balance").textContent = toBanglaNumber(savings);
-    document.getElementById("alwaysSavingsPercentage").textContent = toBanglaNumber(savingsRate.toFixed(0)) + " %";
     document.getElementById("alwaysMonthlySavings").textContent = toBanglaNumber(savings);
+    document.getElementById("alwaysSavingsPercentage").textContent = toBanglaPercentage(savingsRate);
   });
 }
 
-// টেবিল লোড (ফিল্টার অনুযায়ী)
+// ট্রানজ্যাকশন লোড (filter সহ)
 function loadTransactions(userId) {
+  if (!currentFilter) return; // ফিল্টার না চাপলে কিছুই না
+
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
   tbody.innerHTML = "";
@@ -64,7 +74,7 @@ function loadTransactions(userId) {
         const amount = parseFloat(data.amount || 0);
         const type = data.type || "";
 
-        if (!currentFilter || (currentFilter !== "all" && type !== currentFilter)) return;
+        if (currentFilter !== "all" && type !== currentFilter) return;
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -82,8 +92,8 @@ function loadTransactions(userId) {
     });
 }
 
-// ফর্ম সাবমিট (নতুন এন্ট্রি)
-document.getElementById("transactionForm").addEventListener("submit", e => {
+// ফর্ম সাবমিট
+document.getElementById("transactionForm").addEventListener("submit", function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -110,7 +120,7 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
     });
 });
 
-// এডিট / ডিলিট হ্যান্ডলার
+// এডিট / ডিলিট
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   const docId = e.target.getAttribute("data-id");
@@ -118,9 +128,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
 
   if (e.target.classList.contains("deleteBtn")) {
     if (confirm("আপনি কি ডিলিট করতে চান?")) {
-      docRef.delete().then(() => {
-        loadFullSummary(user.uid);
-      });
+      docRef.delete().then(() => loadFullSummary(user.uid));
     }
   }
 
@@ -133,7 +141,6 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
       document.getElementById("category").value = data.category || "";
       document.getElementById("amount").value = data.amount || "";
 
-      const originalHandler = document.getElementById("transactionForm").onsubmit;
       document.getElementById("transactionForm").onsubmit = function (ev) {
         ev.preventDefault();
         const updatedData = {
@@ -145,7 +152,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
         };
         docRef.update(updatedData).then(() => {
           document.getElementById("transactionForm").reset();
-          document.getElementById("transactionForm").onsubmit = originalHandler;
+          document.getElementById("transactionForm").onsubmit = submitHandler;
           loadFullSummary(user.uid);
         });
       };
