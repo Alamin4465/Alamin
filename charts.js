@@ -1,56 +1,79 @@
-function renderChart(transactions, filterType) {
-  const categoryMap = {};
+// chart.js
 
-  transactions.forEach(txn => {
-    if (filterType !== "all" && txn.type !== filterType) return;
+let chartInstance;
 
-    const category = txn.category || "অন্যান্য";
-    const amount = parseFloat(txn.amount || 0);
-
-    if (!categoryMap[category]) {
-      categoryMap[category] = 0;
+function renderCategoryChart(data, type) {
+  const categories = {};
+  data.forEach(item => {
+    if (item.type === type || type === "all") {
+      if (!categories[item.category]) {
+        categories[item.category] = 0;
+      }
+      categories[item.category] += parseFloat(item.amount);
     }
-    categoryMap[category] += amount;
   });
 
-  const categories = Object.keys(categoryMap);
-  const values = Object.values(categoryMap);
+  const labels = Object.keys(categories);
+  const values = Object.values(categories);
 
   const options = {
-    chart: {
-      type: 'donut',
-      height: 350
-    },
     series: values,
-    labels: categories,
-    colors: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#3F51B5', '#009688'],
+    chart: {
+      width: "100%",
+      type: "pie",
+      toolbar: {
+        show: false
+      }
+    },
+    labels: labels,
+    theme: {
+      monochrome: {
+        enabled: true,
+        color: '#4e73df',
+        shadeTo: 'light',
+        shadeIntensity: 0.65
+      }
+    },
     legend: {
       position: 'bottom'
     },
-    dataLabels: {
-      formatter: function (val, opts) {
-        const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-        const formatted = val.toFixed(1).split('').map(d => banglaDigits[d] || d).join('');
-        return formatted + '%';
+    plotOptions: {
+      pie: {
+        donut: {
+          labels: {
+            show: false
+          }
+        },
+        expandOnClick: true,
+        offsetY: 10,
+        dataLabels: {
+          dropShadow: {
+            enabled: true,
+            top: 1,
+            left: 1,
+            blur: 2,
+            opacity: 0.5
+          }
+        }
       }
     },
-    tooltip: {
-      y: {
-        formatter: function(val) {
-          return toBanglaNumber(val);
-        }
+    fill: {
+      type: 'gradient'
+    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontSize: '14px',
+        fontFamily: 'Helvetica, Arial, sans-serif',
+        fontWeight: 'bold'
       }
     }
   };
 
-  // Chart container id="categoryChart"
-  const chartContainer = document.querySelector("#categoryChart");
-
-  if (window.chart) {
-    window.chart.updateOptions(options);
-    window.chart.updateSeries(values);
-  } else {
-    window.chart = new ApexCharts(chartContainer, options);
-    window.chart.render();
+  if (chartInstance) {
+    chartInstance.destroy();
   }
+
+  chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
+  chartInstance.render();
 }
