@@ -240,19 +240,44 @@ tr.expense-row {
 
 
 
-#charts-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 20px;
-  background: transparent;
+/* চার্ট কন্টেইনার */
+.chart-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 30px auto;
   padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* চার্ট হেডিং */
+.chart-container h2 {
+  text-align: center;
+  font-size: 22px;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+/* Apex এবং Google চার্টের div */
 #categoryChart,
 #monthly3dChart {
   width: 100%;
-  max-width: 500px;
   height: 500px;
-  background: transparent;
+}
+
+/* মোবাইল রেসপনসিভ */
+@media (max-width: 600px) {
+  #categoryChart,
+  #monthly3dChart {
+    height: 400px;
+  }
+
+  .chart-container {
+    padding: 10px;
+  }
+
+  .chart-container h2 {
+    font-size: 18px;
+  }
 }
