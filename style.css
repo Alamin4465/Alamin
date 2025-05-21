@@ -244,11 +244,12 @@ tr.expense-row {
   justify-content: center;
   align-items: flex-start;
   gap: 20px;
-  flex-wrap: wrap;
-  background: none;
+  background: transparent;
+  padding: 20px;
 }
 
-#categoryChart, #monthly3dChart {
+#categoryChart,
+#monthly3dChart {
   width: 500px;
   height: 500px;
   background: transparent;
