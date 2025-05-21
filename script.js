@@ -1,22 +1,28 @@
-let currentFilter = ""; // শুরুতে কিছু না দেখানোর জন্য
+let currentFilter = null;
 
+function toBanglaNumber(num) {
+  const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  let fixed = parseFloat(num).toFixed(0); // Remove decimals
+  return fixed.split('').map(d => banglaDigits[d] || d).join('') + " টাকা";
+}
+
+// ইউজার লগইন থাকলে ডেটা লোড
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     document.querySelector(".container").style.display = "block";
-    loadUserInfo(user);
     loadFullSummary(user.uid);
-    // টেবিল লোড করবো না, যতক্ষণ না ফিল্টার বাটনে ক্লিক হয়
+    loadUserInfo(user);
   }
 });
 
-// ইউজার তথ্য
+// ইউজার তথ্য দেখানো
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
 }
 
-// সব ডেটা ভিত্তিক সামারি
+// সব ডেটা ভিত্তিক সামারি লোড
 function loadFullSummary(userId) {
   const db = firebase.firestore();
   db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
@@ -33,21 +39,19 @@ function loadFullSummary(userId) {
     const savings = totalIncome - totalExpense;
     const savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
 
-    document.getElementById("totalIncome").textContent = totalIncome.toFixed(2);
-    document.getElementById("totalExpense").textContent = totalExpense.toFixed(2);
-    document.getElementById("balance").textContent = savings.toFixed(2);
-    document.getElementById("alwaysSavingsPercentage").textContent = savingsRate.toFixed(2);
-    document.getElementById("alwaysMonthlySavings").textContent = savings.toFixed(2);
+    document.getElementById("totalIncome").textContent = toBanglaNumber(totalIncome);
+    document.getElementById("totalExpense").textContent = toBanglaNumber(totalExpense);
+    document.getElementById("balance").textContent = toBanglaNumber(savings);
+    document.getElementById("alwaysSavingsPercentage").textContent = toBanglaNumber(savingsRate.toFixed(0)) + " %";
+    document.getElementById("alwaysMonthlySavings").textContent = toBanglaNumber(savings);
   });
 }
 
-// ট্রানজেকশন টেবিল লোড (শুধু ফিল্টার বাটনে ক্লিক করার পর)
+// টেবিল লোড (ফিল্টার অনুযায়ী)
 function loadTransactions(userId) {
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
   tbody.innerHTML = "";
-
-  if (!currentFilter || currentFilter === "") return;
 
   db.collection("users")
     .doc(userId)
@@ -60,14 +64,14 @@ function loadTransactions(userId) {
         const amount = parseFloat(data.amount || 0);
         const type = data.type || "";
 
-        if (currentFilter !== "all" && type !== currentFilter) return;
+        if (!currentFilter || (currentFilter !== "all" && type !== currentFilter)) return;
 
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${data.date || ""}</td>
           <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
           <td>${data.category || ""}</td>
-          <td>${amount}</td>
+          <td>${toBanglaNumber(amount)}</td>
           <td>
             <button class="editBtn" data-id="${doc.id}">এডিট</button>
             <button class="deleteBtn" data-id="${doc.id}">ডিলিট</button>
@@ -102,7 +106,7 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
     })
     .then(() => {
       document.getElementById("transactionForm").reset();
-      loadFullSummary(user.uid); // নতুন ডেটার পর সামারি রিফ্রেশ
+      loadFullSummary(user.uid);
     });
 });
 
@@ -115,7 +119,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   if (e.target.classList.contains("deleteBtn")) {
     if (confirm("আপনি কি ডিলিট করতে চান?")) {
       docRef.delete().then(() => {
-        loadFullSummary(user.uid); // ডিলিটের পর সামারি রিফ্রেশ
+        loadFullSummary(user.uid);
       });
     }
   }
@@ -129,10 +133,8 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
       document.getElementById("category").value = data.category || "";
       document.getElementById("amount").value = data.amount || "";
 
-      const form = document.getElementById("transactionForm");
-      const originalSubmit = form.onsubmit;
-
-      form.onsubmit = function (ev) {
+      const originalHandler = document.getElementById("transactionForm").onsubmit;
+      document.getElementById("transactionForm").onsubmit = function (ev) {
         ev.preventDefault();
         const updatedData = {
           date: document.getElementById("date").value,
@@ -142,16 +144,16 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
         docRef.update(updatedData).then(() => {
-          form.reset();
-          form.onsubmit = originalSubmit;
-          loadFullSummary(user.uid); // এডিটের পর সামারি রিফ্রেশ
+          document.getElementById("transactionForm").reset();
+          document.getElementById("transactionForm").onsubmit = originalHandler;
+          loadFullSummary(user.uid);
         });
       };
     });
   }
 });
 
-// ফিল্টার বাটন হ্যান্ডলার
+// ফিল্টার বাটন
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
@@ -160,7 +162,7 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
 
     const user = firebase.auth().currentUser;
     if (user) {
-      loadTransactions(user.uid); // টেবিল আপডেট
+      loadTransactions(user.uid);
     }
   });
 });
