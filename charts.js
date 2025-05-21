@@ -25,7 +25,7 @@ function renderChart(transactions, filterType = "all") {
 
   const options = {
     chart: {
-      type: 'donut',
+      type: 'pie',
       height: 350,
       width: '100%',
       toolbar: { show: false }
@@ -51,16 +51,6 @@ function renderChart(transactions, filterType = "all") {
     fill: { type: 'gradient' },
     plotOptions: {
       pie: {
-        donut: {
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: 'মোট',
-              formatter: () => toBanglaNumber(values.reduce((a,b) => a+b, 0).toFixed(2)) + ' টাকা'
-            }
-          }
-        },
         expandOnClick: true,
         offsetY: 10,
         dataLabels: {
