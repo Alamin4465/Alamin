@@ -32,14 +32,13 @@ function loadFullSummary(userId) {
     });
 
     const savings = totalIncome - totalExpense;
-    const totalSavings = totalBalance;
     const savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
 
     document.getElementById("totalIncome").textContent = totalIncome.toFixed(2);
     document.getElementById("totalExpense").textContent = totalExpense.toFixed(2);
     document.getElementById("balance").textContent = savings.toFixed(2);
     document.getElementById("alwaysSavingsPercentage").textContent = savingsRate.toFixed(2);
-    document.getElementById("alwaysMonthlySavings").textContent = totalSavings.toFixed(2);
+    document.getElementById("alwaysMonthlySavings").textContent = savings.toFixed(2);
   });
 }
 
@@ -80,7 +79,9 @@ function loadTransactions(userId) {
 }
 
 // ফর্ম সাবমিট (নতুন এন্ট্রি)
-document.getElementById("transactionForm").addEventListener("submit", e => {
+document.getElementById("transactionForm").addEventListener("submit", submitHandler);
+
+function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -104,7 +105,7 @@ document.getElementById("transactionForm").addEventListener("submit", e => {
     .then(() => {
       document.getElementById("transactionForm").reset();
     });
-});
+}
 
 // এডিট / ডিলিট হ্যান্ডলার
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
