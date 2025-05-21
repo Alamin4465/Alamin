@@ -8,120 +8,121 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
   <div class="container">
-	  
-	  <div id="user-info"></div>
-	  <div class="header-box">
-		  <h1>আয়-ব্যয় ব্যবস্থাপনা সিস্টেম</h1>
-		  <p>লেনদেনের হিসাব সংরক্ষণ করুন</p>
-	  </div>
-	  <div id="summary" class="summary-container">
-		  <div class="summary-card">
-            <img src="https://cdn-icons-png.flaticon.com/128/3135/3135679.png" class="summary-icon" alt="আয়">
-            <h3>মোট আয়</h3>
-	   <p><span id="totalIncome"> 0</span></p>
-        </div>
+    <div id="user-info"></div>
 
-        <div class="summary-card">
-            <img src="https://cdn-icons-png.flaticon.com/128/992/992700.png" class="summary-icon" alt="ব্যয়">
-            <h3>মোট ব্যয়</h3>
-            <p><span id="totalExpense"> 0</span></p>
-        </div>
-
-        <div class="summary-card">
-            <img src="https://cdn-icons-png.flaticon.com/128/3135/3135686.png" class="summary-icon" alt="ব্যালেন্স">
-            <h3>বর্তমান ব্যালেন্স</h3>
-            <p><span id="balance">0</span></p>
-        </div>
+    <div class="header-box">
+      <h1>আয়-ব্যয় ব্যবস্থাপনা সিস্টেম</h1>
+      <p>লেনদেনের হিসাব সংরক্ষণ করুন</p>
     </div>
-    				
-<div class="form-container">
-  <form id="transactionForm">
-      <input class="form-input "type="date" id="date" required>
 
-      <select class="form-input "id="type" required >
-        <option value="">টাইপ নির্বাচন করুন</option>
-        <option value="income">আয়</option>
-        <option value="expense">ব্যয়</option>
-      </select>
+    <div id="summary" class="summary-container">
+      <div class="summary-card">
+        <img src="https://cdn-icons-png.flaticon.com/128/3135/3135679.png" class="summary-icon" alt="আয়">
+        <h3>মোট আয়</h3>
+        <p><span id="totalIncome">0</span></p>
+      </div>
+      <div class="summary-card">
+        <img src="https://cdn-icons-png.flaticon.com/128/992/992700.png" class="summary-icon" alt="ব্যয়">
+        <h3>মোট ব্যয়</h3>
+        <p><span id="totalExpense">0</span></p>
+      </div>
+      <div class="summary-card">
+        <img src="https://cdn-icons-png.flaticon.com/128/3135/3135686.png" class="summary-icon" alt="ব্যালেন্স">
+        <h3>বর্তমান ব্যালেন্স</h3>
+        <p><span id="balance">0</span></p>
+      </div>
+    </div>
 
-      <select class="form-input" id="category" required>
-        <option value="" class="form-input">ক্যাটেগরি নির্বাচন করুন</option>
-      </select>
+    <div class="form-container">
+      <form id="transactionForm">
+        <input class="form-input" type="date" id="date" required>
+        <select class="form-input" id="type" required>
+          <option value="">টাইপ নির্বাচন করুন</option>
+          <option value="income">আয়</option>
+          <option value="expense">ব্যয়</option>
+        </select>
+        <select class="form-input" id="category" required>
+          <option value="">ক্যাটেগরি নির্বাচন করুন</option>
+        </select>
+        <input type="number" class="form-input" id="amount" placeholder="টাকার পরিমাণ" required>
+        <button type="submit" class="form-button">সংরক্ষণ করুন</button>
+      </form>
 
-      <input type="number"class="form-input" id="amount" placeholder="টাকার পরিমাণ" required>
-      <button type="submit" class="form-button">সংরক্ষণ করুন</button>
-    </form>
-  <div class="savings-box">
-    <h3>মাসিক সঞ্চয়:</h3>
-<div class="savings"><span id="alwaysSavingsPercentage">0.00</span></div>
-  <div class="savings"><span id="alwaysMonthlySavings">0.00</span></div>
-</div>
-</div>
-<div class="Filter-tabel">
-    <h2>লেনদেন তালিকা</h2>
-  <div id="filterButtons">
-  <button data-filter="all" class="filterBtn active">সব</button>
-  <button data-filter="income" class="filterBtn">শুধু আয়</button>
-  <button data-filter="expense" class="filterBtn">শুধু ব্যয়</button>
-</div>
-    <table id="transactionTable">
-      <thead>
-        <tr>
-          <th>তারিখ</th>
-          <th>টাইপ</th>
-          <th>ক্যাটেগরি</th>
-          <th>টাকা</th>
-          <th>অ্যাকশন</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-</div>
-    <div class=filfer-mas"> 
+      <div class="savings-box">
+        <h3>মাসিক সঞ্চয়:</h3>
+        <div class="savings"><span id="alwaysSavingsPercentage">0.00</span></div>
+        <div class="savings"><span id="alwaysMonthlySavings">0.00</span></div>
+      </div>
+    </div>
+
+    <div class="Filter-tabel">
+      <h2>লেনদেন তালিকা</h2>
+      <div id="filterButtons">
+        <button data-filter="all" class="filterBtn active">সব</button>
+        <button data-filter="income" class="filterBtn">শুধু আয়</button>
+        <button data-filter="expense" class="filterBtn">শুধু ব্যয়</button>
+      </div>
+      <table id="transactionTable">
+        <thead>
+          <tr>
+            <th>তারিখ</th>
+            <th>টাইপ</th>
+            <th>ক্যাটেগরি</th>
+            <th>টাকা</th>
+            <th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="filter-mas"> 
       <div>
-  <label>তারিখ নির্বাচন করুন:</label>
-  <input type="date" id="dateFilter" />
-  <label>মাস নির্বাচন করুন:</label>
-  <input type="month" id="monthFilter" />
-  <button id="resetFilterBtn">রিসেট</button>
-</div>
+        <label>তারিখ নির্বাচন করুন:</label>
+        <input type="date" id="dateFilter" />
+        <label>মাস নির্বাচন করুন:</label>
+        <input type="month" id="monthFilter" />
+        <button id="resetFilterBtn">রিসেট</button>
+      </div>
 
-<table id="filteredTable" border="1" style="margin-top: 10px; width: 100%;">
-  <thead>
-    <tr>
-      <th>তারিখ/মাস</th>
-      <th>ক্যাটাগরি</th>
-      <th>আয় টাকা</th>
-      <th>ব্যয় টাকা</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+      <table id="filteredTable" border="1" style="margin-top: 10px; width: 100%;">
+        <thead>
+          <tr>
+            <th>তারিখ/মাস</th>
+            <th>ক্যাটাগরি</th>
+            <th>আয় টাকা</th>
+            <th>ব্যয় টাকা</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
 
-<!-- মাসিক সামারি -->
-<div id="monthlySummary" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; display: none;">
-  <h3>মাসিক সামারি</h3>
-  <p>গত মাসের টাকা: <span id="prevBalance">0</span> টাকা</p>
-  <p>বর্তমান মাসের আয়: <span id="monthlyIncome">0</span> টাকা</p>
-  <p>বর্তমান মাসের ব্যয়: <span id="monthlyExpense">0</span> টাকা</p>
-  <p><strong>মোট টাকা: <span id="totalBalance">0</span> টাকা</strong></p>
-</div>
-    </div> 
-	<div id="charts-container">
-    <div id="categoryChart"></div>
-    <div id="monthly3dChart"></div>
+      <div id="monthlySummary" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; display: none;">
+        <h3>মাসিক সামারি</h3>
+        <p>গত মাসের টাকা: <span id="prevBalance">0</span> টাকা</p>
+        <p>বর্তমান মাসের আয়: <span id="monthlyIncome">0</span> টাকা</p>
+        <p>বর্তমান মাসের ব্যয়: <span id="monthlyExpense">0</span> টাকা</p>
+        <p><strong>মোট টাকা: <span id="totalBalance">0</span> টাকা</strong></p>
+      </div>
+    </div>
 
+    <div id="charts-container">
+      <div id="categoryChart"></div>
+      <div id="monthly3dChart"></div>
+    </div>
 
-    <button id="logoutBtn">লগআউট</button>
+    <div>
+      <button id="logoutBtn">লগআউট</button>
+    </div>
   </div>
 
-<script src="charts.js"></script>
-<script src="monthday.js"></script>
+  <script src="charts.js"></script>
+  <script src="monthday.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
