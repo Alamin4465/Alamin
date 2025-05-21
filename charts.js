@@ -1,47 +1,77 @@
-// chart.js
-
 let chartInstance;
 
-function renderCategoryChart(data, type) {
-  const categories = {};
-  data.forEach(item => {
-    if (item.type === type || type === "all") {
-      if (!categories[item.category]) {
-        categories[item.category] = 0;
-      }
-      categories[item.category] += parseFloat(item.amount);
+function toBanglaNumber(number) {
+  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  return number.toString().split('').map(ch => {
+    if (/\d/.test(ch)) return banglaDigits[ch];
+    return ch;
+  }).join('');
+}
+
+function renderCategoryChart(transactions, filterType = "all") {
+  const categoryMap = {};
+
+  transactions.forEach(txn => {
+    if (filterType !== "all" && txn.type !== filterType) return;
+
+    const category = txn.category || "অন্যান্য";
+    const amount = parseFloat(txn.amount) || 0;
+
+    if (!categoryMap[category]) {
+      categoryMap[category] = 0;
     }
+    categoryMap[category] += amount;
   });
 
-  const labels = Object.keys(categories);
-  const values = Object.values(categories);
+  const categories = Object.keys(categoryMap);
+  const values = Object.values(categoryMap);
 
   const options = {
-    series: values,
     chart: {
-      width: "100%",
-      type: "pie",
+      type: 'donut',
+      height: 350,
+      width: '100%',
       toolbar: {
         show: false
       }
     },
-    labels: labels,
-    theme: {
-      monochrome: {
-        enabled: true,
-        color: '#4e73df',
-        shadeTo: 'light',
-        shadeIntensity: 0.65
-      }
-    },
+    series: values,
+    labels: categories,
+    colors: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#3F51B5', '#009688'],
     legend: {
       position: 'bottom'
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val) {
+        // শতাংশ হিসেবে দেখাবে বাংলায়
+        return toBanglaNumber(val.toFixed(1)) + '%';
+      },
+      style: {
+        fontSize: '14px',
+        fontWeight: 'bold'
+      }
+    },
+    tooltip: {
+      y: {
+        formatter: function(val) {
+          return toBanglaNumber(val.toFixed(2)) + ' টাকা';
+        }
+      }
+    },
+    fill: {
+      type: 'gradient'
     },
     plotOptions: {
       pie: {
         donut: {
           labels: {
-            show: false
+            show: true,
+            total: {
+              show: true,
+              label: 'মোট',
+              formatter: () => toBanglaNumber(values.reduce((a,b) => a+b, 0).toFixed(2)) + ' টাকা'
+            }
           }
         },
         expandOnClick: true,
@@ -56,24 +86,14 @@ function renderCategoryChart(data, type) {
           }
         }
       }
-    },
-    fill: {
-      type: 'gradient'
-    },
-    dataLabels: {
-      enabled: true,
-      style: {
-        fontSize: '14px',
-        fontFamily: 'Helvetica, Arial, sans-serif',
-        fontWeight: 'bold'
-      }
     }
   };
 
   if (chartInstance) {
-    chartInstance.destroy();
+    chartInstance.updateOptions(options);
+    chartInstance.updateSeries(values);
+  } else {
+    chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
+    chartInstance.render();
   }
-
-  chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
-  chartInstance.render();
 }
