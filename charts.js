@@ -40,51 +40,6 @@ function renderCategoryChart(userId) {
   });
 }
 
-function renderMonthlyChart(userId) {
-  const db = firebase.firestore();
-  db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
-    const monthData = {};
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const date = data.date || "";
-      const type = data.type || "";
-      const amount = parseFloat(data.amount) || 0;
-      const month = date.substring(0, 7); // YYYY-MM
-
-      if (!monthData[month]) monthData[month] = { income: 0, expense: 0 };
-      if (type === "income") monthData[month].income += amount;
-      else if (type === "expense") monthData[month].expense += amount;
-    });
-
-    const months = Object.keys(monthData).sort();
-    const incomeSeries = months.map(m => monthData[m].income);
-    const expenseSeries = months.map(m => monthData[m].expense);
-    const balanceSeries = months.map(m => monthData[m].income - monthData[m].expense);
-
-    const options = {
-      chart: { type: 'bar', height: 400, stacked: false, toolbar: { show: true } },
-      plotOptions: { bar: { horizontal: false, columnWidth: '50%', endingShape: 'rounded' } },
-      series: [
-        { name: 'আয়', data: incomeSeries },
-        { name: 'ব্যয়', data: expenseSeries },
-        { name: 'সঞ্চয়', data: balanceSeries }
-      ],
-      xaxis: { categories: months },
-      title: { text: 'মাসভিত্তিক আয়, ব্যয় ও সঞ্চয়' },
-      dataLabels: { enabled: true, formatter: val => '৳' + val.toLocaleString('bn-BD') },
-      colors: ['#008000', '#FF0000', '#FFD700']
-    };
-
-    const chartEl = document.querySelector("#monthlyChart");
-    if(chartEl) {
-      if(window.monthlyChartInstance) window.monthlyChartInstance.destroy();
-      window.monthlyChartInstance = new ApexCharts(chartEl, options);
-      window.monthlyChartInstance.render();
-    }
-  });
-}
-
 function render3DMonthlyLevelChart(userId) {
   const db = firebase.firestore();
   db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
@@ -103,24 +58,29 @@ function render3DMonthlyLevelChart(userId) {
     });
 
     const months = Object.keys(monthData).sort();
-    const dataArray = [['মাস', 'আয়', { role: 'style' }, 'ব্যয়', { role: 'style' }, 'সঞ্চয়', { role: 'style' }]];
+    // Google Charts array format: [Label, Income, Income Label, Expense, Expense Label, Saving, Saving Label]
+    const dataArray = [['মাস', 'আয়', { role: 'annotation' }, 'ব্যয়', { role: 'annotation' }, 'সঞ্চয়', { role: 'annotation' }, { role: 'style' }]];
 
     months.forEach(month => {
       const income = monthData[month].income;
       const expense = monthData[month].expense;
       const saving = income - expense;
 
+      // কালার লেভেল: সঞ্চয় > 0 হলুদ, আয় গ্রিন, ব্যয় রেড
       dataArray.push([
         month,
-        income, 'color: green',
-        expense, 'color: red',
-        saving, 'color: gold'
+        income, '৳' + income.toLocaleString('bn-BD'),
+        expense, '৳' + expense.toLocaleString('bn-BD'),
+        saving, '৳' + saving.toLocaleString('bn-BD'),
+        // Color for entire bar group (আয়=green, ব্যয়=red, সঞ্চয়=gold)
+        null // আমরা আলাদা আলাদা রঙ ব্যবহার করব তাই এখানে null দিলাম
       ]);
     });
 
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(() => {
       const data = google.visualization.arrayToDataTable(dataArray);
+
       const options = {
         title: 'মাসভিত্তিক আয়, ব্যয় ও সঞ্চয় (৩D লেভেল)',
         isStacked: false,
@@ -129,7 +89,13 @@ function render3DMonthlyLevelChart(userId) {
         bar: { groupWidth: '75%' },
         legend: { position: 'top' },
         vAxis: { minValue: 0 },
-        is3D: true
+        is3D: true,
+        seriesType: 'bars',
+        colors: ['green', 'red', 'gold'],
+        annotations: {
+          alwaysOutside: true,
+          textStyle: { fontSize: 12, color: '#000', auraColor: 'none' }
+        }
       };
 
       const chart = new google.visualization.ColumnChart(document.getElementById('monthly3dChart'));
@@ -141,7 +107,6 @@ function render3DMonthlyLevelChart(userId) {
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
     renderCategoryChart(user.uid);
-    renderMonthlyChart(user.uid);
     render3DMonthlyLevelChart(user.uid);
   }
 });
