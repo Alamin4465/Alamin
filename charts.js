@@ -1,14 +1,11 @@
 let chartInstance;
 
-function toBanglaNumber(number) {
+function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-  return number.toString().split('').map(ch => {
-    if (/\d/.test(ch)) return banglaDigits[ch];
-    return ch;
-  }).join('');
+  return num.toString().split('').map(d => banglaDigits[d] || d).join('');
 }
 
-function renderCategoryChart(transactions, filterType = "all") {
+function renderChart(transactions, filterType = "all") {
   const categoryMap = {};
 
   transactions.forEach(txn => {
@@ -31,26 +28,18 @@ function renderCategoryChart(transactions, filterType = "all") {
       type: 'donut',
       height: 350,
       width: '100%',
-      toolbar: {
-        show: false
-      }
+      toolbar: { show: false }
     },
     series: values,
     labels: categories,
     colors: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#3F51B5', '#009688'],
-    legend: {
-      position: 'bottom'
-    },
+    legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
       formatter: function (val) {
-        // শতাংশ হিসেবে দেখাবে বাংলায়
         return toBanglaNumber(val.toFixed(1)) + '%';
       },
-      style: {
-        fontSize: '14px',
-        fontWeight: 'bold'
-      }
+      style: { fontSize: '14px', fontWeight: 'bold' }
     },
     tooltip: {
       y: {
@@ -59,9 +48,7 @@ function renderCategoryChart(transactions, filterType = "all") {
         }
       }
     },
-    fill: {
-      type: 'gradient'
-    },
+    fill: { type: 'gradient' },
     plotOptions: {
       pie: {
         donut: {
@@ -77,13 +64,7 @@ function renderCategoryChart(transactions, filterType = "all") {
         expandOnClick: true,
         offsetY: 10,
         dataLabels: {
-          dropShadow: {
-            enabled: true,
-            top: 1,
-            left: 1,
-            blur: 2,
-            opacity: 0.5
-          }
+          dropShadow: { enabled: true, top: 1, left: 1, blur: 2, opacity: 0.5 }
         }
       }
     }
