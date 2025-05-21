@@ -162,7 +162,7 @@ body {
 }
 
 .filterBtn {
-  background-color: #ddd;
+  background-color: #007bff;
   color: #333;
   border: none;
   padding: 10px 20px;
@@ -173,12 +173,12 @@ body {
 }
 
 .filterBtn:hover {
-  background-color: #007bff;
+  background-color: red;
   color: white;
 }
 
 .filterBtn.active {
-  background-color: #007bff;
+  background-color: red;
   color: white;
 }
 
@@ -234,4 +234,22 @@ tr.expense-row {
 .deleteBtn {
   background-color: #dc3545;
   color: white;
+}
+
+
+
+
+#charts-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: none;
+}
+
+#categoryChart, #monthly3dChart {
+  width: 500px;
+  height: 500px;
+  background: transparent;
 }
