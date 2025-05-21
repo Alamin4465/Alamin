@@ -5,11 +5,15 @@ function renderCategoryChart(userId) {
     const expenseCategories = {};
 
     snapshot.forEach(doc => {
-      const { type, category, amount } = doc.data();
+      const data = doc.data();
+      const type = data.type || "";
+      const category = data.category || "অন্যান্য";
+      const amount = parseFloat(data.amount) || 0;
+
       if (type === "income") {
-        incomeCategories[category] = (incomeCategories[category] || 0) + parseFloat(amount);
+        incomeCategories[category] = (incomeCategories[category] || 0) + amount;
       } else if (type === "expense") {
-        expenseCategories[category] = (expenseCategories[category] || 0) + parseFloat(amount);
+        expenseCategories[category] = (expenseCategories[category] || 0) + amount;
       }
     });
 
@@ -18,22 +22,21 @@ function renderCategoryChart(userId) {
     const expenseData = labels.map(label => expenseCategories[label] || 0);
 
     const options = {
-      chart: {
-        type: 'donut',
-        width: 500
-      },
+      chart: { type: 'donut', width: 500 },
       series: [...incomeData, ...expenseData],
       labels: [...labels.map(l => "আয় - " + l), ...labels.map(l => "ব্যয় - " + l)],
       title: { text: "আয় ও ব্যয় (ক্যাটাগরি অনুযায়ী)" },
-      plotOptions: {
-        pie: {
-          donut: { size: '45%' }
-        }
-      }
+      plotOptions: { pie: { donut: { size: '45%' } } },
+      legend: { position: 'bottom' },
+      tooltip: { y: { formatter: val => '৳' + val.toLocaleString('bn-BD') } }
     };
 
-    const chart = new ApexCharts(document.querySelector("#categoryChart"), options);
-    chart.render();
+    const chartEl = document.querySelector("#categoryChart");
+    if(chartEl) {
+      if(window.categoryChartInstance) window.categoryChartInstance.destroy();
+      window.categoryChartInstance = new ApexCharts(chartEl, options);
+      window.categoryChartInstance.render();
+    }
   });
 }
 
@@ -43,12 +46,15 @@ function renderMonthlyChart(userId) {
     const monthData = {};
 
     snapshot.forEach(doc => {
-      const { date, type, amount } = doc.data();
-      const month = (date || "").substring(0, 7); // YYYY-MM
-      if (!monthData[month]) monthData[month] = { income: 0, expense: 0 };
+      const data = doc.data();
+      const date = data.date || "";
+      const type = data.type || "";
+      const amount = parseFloat(data.amount) || 0;
+      const month = date.substring(0, 7); // YYYY-MM
 
-      if (type === "income") monthData[month].income += parseFloat(amount);
-      else if (type === "expense") monthData[month].expense += parseFloat(amount);
+      if (!monthData[month]) monthData[month] = { income: 0, expense: 0 };
+      if (type === "income") monthData[month].income += amount;
+      else if (type === "expense") monthData[month].expense += amount;
     });
 
     const months = Object.keys(monthData).sort();
@@ -57,19 +63,8 @@ function renderMonthlyChart(userId) {
     const balanceSeries = months.map(m => monthData[m].income - monthData[m].expense);
 
     const options = {
-      chart: {
-        type: 'bar',
-        height: 400,
-        stacked: false,
-        toolbar: { show: true }
-      },
-      plotOptions: {
-        bar: {
-          horizontal: false,
-          columnWidth: '50%',
-          endingShape: 'rounded'
-        }
-      },
+      chart: { type: 'bar', height: 400, stacked: false, toolbar: { show: true } },
+      plotOptions: { bar: { horizontal: false, columnWidth: '50%', endingShape: 'rounded' } },
       series: [
         { name: 'আয়', data: incomeSeries },
         { name: 'ব্যয়', data: expenseSeries },
@@ -77,21 +72,18 @@ function renderMonthlyChart(userId) {
       ],
       xaxis: { categories: months },
       title: { text: 'মাসভিত্তিক আয়, ব্যয় ও সঞ্চয়' },
-      dataLabels: { enabled: true }
+      dataLabels: { enabled: true, formatter: val => '৳' + val.toLocaleString('bn-BD') },
+      colors: ['#008000', '#FF0000', '#FFD700']
     };
 
-    const chart = new ApexCharts(document.querySelector("#monthlyChart"), options);
-    chart.render();
+    const chartEl = document.querySelector("#monthlyChart");
+    if(chartEl) {
+      if(window.monthlyChartInstance) window.monthlyChartInstance.destroy();
+      window.monthlyChartInstance = new ApexCharts(chartEl, options);
+      window.monthlyChartInstance.render();
+    }
   });
 }
-
-// ইউজার লগইন চেক করে চার্ট রেন্ডারিং
-firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    renderCategoryChart(user.uid);
-    renderMonthlyChart(user.uid);
-  }
-});
 
 function render3DMonthlyLevelChart(userId) {
   const db = firebase.firestore();
@@ -99,12 +91,15 @@ function render3DMonthlyLevelChart(userId) {
     const monthData = {};
 
     snapshot.forEach(doc => {
-      const { date, type, amount } = doc.data();
-      const month = (date || "").substring(0, 7); // YYYY-MM
-      if (!monthData[month]) monthData[month] = { income: 0, expense: 0 };
+      const data = doc.data();
+      const date = data.date || "";
+      const type = data.type || "";
+      const amount = parseFloat(data.amount) || 0;
+      const month = date.substring(0, 7); // YYYY-MM
 
-      if (type === "income") monthData[month].income += parseFloat(amount);
-      else if (type === "expense") monthData[month].expense += parseFloat(amount);
+      if (!monthData[month]) monthData[month] = { income: 0, expense: 0 };
+      if (type === "income") monthData[month].income += amount;
+      else if (type === "expense") monthData[month].expense += amount;
     });
 
     const months = Object.keys(monthData).sort();
@@ -126,7 +121,6 @@ function render3DMonthlyLevelChart(userId) {
     google.charts.load('current', {'packages':['corechart']});
     google.charts.setOnLoadCallback(() => {
       const data = google.visualization.arrayToDataTable(dataArray);
-
       const options = {
         title: 'মাসভিত্তিক আয়, ব্যয় ও সঞ্চয় (৩D লেভেল)',
         isStacked: false,
@@ -135,7 +129,6 @@ function render3DMonthlyLevelChart(userId) {
         bar: { groupWidth: '75%' },
         legend: { position: 'top' },
         vAxis: { minValue: 0 },
-        // 3D ইফেক্টের জন্য
         is3D: true
       };
 
@@ -145,9 +138,10 @@ function render3DMonthlyLevelChart(userId) {
   });
 }
 
-// লগইন হওয়ার পরে কল করুন
 firebase.auth().onAuthStateChanged(user => {
   if (user) {
+    renderCategoryChart(user.uid);
+    renderMonthlyChart(user.uid);
     render3DMonthlyLevelChart(user.uid);
   }
 });
