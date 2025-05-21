@@ -32,12 +32,14 @@ function loadFullSummary(userId) {
     });
 
     const savings = totalIncome - totalExpense;
+    const totalSavings = totalBalance;
     const savingsRate = totalIncome > 0 ? (savings / totalIncome) * 100 : 0;
 
     document.getElementById("totalIncome").textContent = totalIncome.toFixed(2);
     document.getElementById("totalExpense").textContent = totalExpense.toFixed(2);
     document.getElementById("balance").textContent = savings.toFixed(2);
     document.getElementById("alwaysSavingsPercentage").textContent = savingsRate.toFixed(2);
+    document.getElementById("alwaysMonthlySavings").textContent = totalSavings.toFixed(2);
   });
 }
 
