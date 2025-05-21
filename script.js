@@ -1,4 +1,6 @@
-let currentFilter = null; // শুরুতে কিছুই দেখাবে না
+let currentFilter = null;
+let allTransactions = [];
+let chart;
 
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
@@ -10,7 +12,6 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// বাংলা সংখ্যা রূপান্তর
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
   let fixed = parseInt(num) || 0;
@@ -25,12 +26,10 @@ function toBanglaPercentage(num) {
   }).join('') + " %";
 }
 
-// ইউজার তথ্য
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
 }
 
-// সামারি
 function loadFullSummary(userId) {
   const db = firebase.firestore();
   db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
@@ -55,9 +54,8 @@ function loadFullSummary(userId) {
   });
 }
 
-// ট্রানজ্যাকশন লোড (filter সহ)
 function loadTransactions(userId) {
-  if (!currentFilter) return; // ফিল্টার না চাপলে কিছুই না
+  if (!currentFilter) return;
 
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
@@ -69,12 +67,16 @@ function loadTransactions(userId) {
     .orderBy("timestamp", "desc")
     .onSnapshot(snapshot => {
       tbody.innerHTML = "";
+      allTransactions = [];
+
       snapshot.forEach(doc => {
         const data = doc.data();
         const amount = parseFloat(data.amount || 0);
         const type = data.type || "";
 
         if (currentFilter !== "all" && type !== currentFilter) return;
+
+        allTransactions.push(data);
 
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -89,10 +91,11 @@ function loadTransactions(userId) {
         `;
         tbody.appendChild(row);
       });
+
+      renderChart(allTransactions, currentFilter);
     });
 }
 
-// ফর্ম সাবমিট
 document.getElementById("transactionForm").addEventListener("submit", function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
@@ -120,7 +123,6 @@ document.getElementById("transactionForm").addEventListener("submit", function s
     });
 });
 
-// এডিট / ডিলিট
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   const docId = e.target.getAttribute("data-id");
@@ -160,7 +162,6 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   }
 });
 
-// ফিল্টার বাটন
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
@@ -174,7 +175,6 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
   });
 });
 
-// লগআউট
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
