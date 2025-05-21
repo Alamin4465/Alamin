@@ -1,20 +1,22 @@
-let currentFilter = "all";
+let currentFilter = ""; // শুরুতে কিছু না দেখানোর জন্য
 
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     document.querySelector(".container").style.display = "block";
-    loadFullSummary(user.uid);
-    loadTransactions(user.uid);
     loadUserInfo(user);
+    loadFullSummary(user.uid);
+    // টেবিল লোড করবো না, যতক্ষণ না ফিল্টার বাটনে ক্লিক হয়
   }
 });
 
+// ইউজার তথ্য
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
 }
 
+// সব ডেটা ভিত্তিক সামারি
 function loadFullSummary(userId) {
   const db = firebase.firestore();
   db.collection("users").doc(userId).collection("transactions").get().then(snapshot => {
@@ -35,14 +37,17 @@ function loadFullSummary(userId) {
     document.getElementById("totalExpense").textContent = totalExpense.toFixed(2);
     document.getElementById("balance").textContent = savings.toFixed(2);
     document.getElementById("alwaysSavingsPercentage").textContent = savingsRate.toFixed(2);
-    document.getElementById("alwaysMonthlySavings").textContent = savings.toFixed(2); // Fix
+    document.getElementById("alwaysMonthlySavings").textContent = savings.toFixed(2);
   });
 }
 
+// ট্রানজেকশন টেবিল লোড (শুধু ফিল্টার বাটনে ক্লিক করার পর)
 function loadTransactions(userId) {
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
   tbody.innerHTML = "";
+
+  if (!currentFilter || currentFilter === "") return;
 
   db.collection("users")
     .doc(userId)
@@ -73,7 +78,8 @@ function loadTransactions(userId) {
     });
 }
 
-function submitHandler(e) {
+// ফর্ম সাবমিট (নতুন এন্ট্রি)
+document.getElementById("transactionForm").addEventListener("submit", e => {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -96,12 +102,11 @@ function submitHandler(e) {
     })
     .then(() => {
       document.getElementById("transactionForm").reset();
-      loadFullSummary(user.uid); // Refresh summary
+      loadFullSummary(user.uid); // নতুন ডেটার পর সামারি রিফ্রেশ
     });
-}
+});
 
-document.getElementById("transactionForm").addEventListener("submit", submitHandler);
-
+// এডিট / ডিলিট হ্যান্ডলার
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   const docId = e.target.getAttribute("data-id");
@@ -110,7 +115,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   if (e.target.classList.contains("deleteBtn")) {
     if (confirm("আপনি কি ডিলিট করতে চান?")) {
       docRef.delete().then(() => {
-        loadFullSummary(user.uid); // Refresh summary after delete
+        loadFullSummary(user.uid); // ডিলিটের পর সামারি রিফ্রেশ
       });
     }
   }
@@ -124,7 +129,10 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
       document.getElementById("category").value = data.category || "";
       document.getElementById("amount").value = data.amount || "";
 
-      document.getElementById("transactionForm").onsubmit = function (ev) {
+      const form = document.getElementById("transactionForm");
+      const originalSubmit = form.onsubmit;
+
+      form.onsubmit = function (ev) {
         ev.preventDefault();
         const updatedData = {
           date: document.getElementById("date").value,
@@ -134,16 +142,16 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
         docRef.update(updatedData).then(() => {
-          document.getElementById("transactionForm").reset();
-          document.getElementById("transactionForm").onsubmit = null;
-          document.getElementById("transactionForm").addEventListener("submit", submitHandler);
-          loadFullSummary(user.uid); // Refresh summary after update
+          form.reset();
+          form.onsubmit = originalSubmit;
+          loadFullSummary(user.uid); // এডিটের পর সামারি রিফ্রেশ
         });
       };
     });
   }
 });
 
+// ফিল্টার বাটন হ্যান্ডলার
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
@@ -152,11 +160,12 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
 
     const user = firebase.auth().currentUser;
     if (user) {
-      loadTransactions(user.uid);
+      loadTransactions(user.uid); // টেবিল আপডেট
     }
   });
 });
 
+// লগআউট
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
