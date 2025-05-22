@@ -1,4 +1,4 @@
-let currentFilter = null;
+let currentFilter = "all";
 let allTransactions = [];
 let chart;
 
@@ -9,6 +9,7 @@ firebase.auth().onAuthStateChanged(user => {
     document.querySelector(".container").style.display = "block";
     loadFullSummary(user.uid);
     loadUserInfo(user);
+    loadTransactions(user.uid);
   }
 });
 
@@ -55,8 +56,6 @@ function loadFullSummary(userId) {
 }
 
 function loadTransactions(userId) {
-  if (!currentFilter) return;
-
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
   tbody.innerHTML = "";
@@ -78,13 +77,11 @@ function loadTransactions(userId) {
 
         allTransactions.push(data);
 
-        const typeClass = type === "income" ? "row-income" : "row-expense";
-
         const row = document.createElement("tr");
-        row.className = typeClass;
+        row.className = type === "income" ? "income-row" : "expense-row";
         row.innerHTML = `
           <td>${data.date || ""}</td>
-          <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
+          <td class="${type === "income" ? "text-green" : "text-red"}">${type === "income" ? "আয়" : "ব্যয়"}</td>
           <td>${data.category || ""}</td>
           <td>${toBanglaNumber(amount)}</td>
           <td>
@@ -99,7 +96,15 @@ function loadTransactions(userId) {
     });
 }
 
-function submitHandler(e) {
+function renderChart(data, filter) {
+  // Placeholder - বাস্তবে ApexCharts ব্যবহার করুন
+  console.log("Rendering chart with filter:", filter, data);
+}
+
+// ফর্ম সাবমিট
+const transactionForm = document.getElementById("transactionForm");
+
+transactionForm.addEventListener("submit", function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -121,13 +126,12 @@ function submitHandler(e) {
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     })
     .then(() => {
-      document.getElementById("transactionForm").reset();
+      transactionForm.reset();
       loadFullSummary(user.uid);
     });
-}
+});
 
-document.getElementById("transactionForm").addEventListener("submit", submitHandler);
-
+// এডিট / ডিলিট
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   const docId = e.target.getAttribute("data-id");
@@ -148,7 +152,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
       document.getElementById("category").value = data.category || "";
       document.getElementById("amount").value = data.amount || "";
 
-      document.getElementById("transactionForm").onsubmit = function (ev) {
+      transactionForm.onsubmit = function (ev) {
         ev.preventDefault();
         const updatedData = {
           date: document.getElementById("date").value,
@@ -158,8 +162,8 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
         docRef.update(updatedData).then(() => {
-          document.getElementById("transactionForm").reset();
-          document.getElementById("transactionForm").onsubmit = submitHandler;
+          transactionForm.reset();
+          transactionForm.onsubmit = submitHandler;
           loadFullSummary(user.uid);
         });
       };
@@ -167,6 +171,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
   }
 });
 
+// ফিল্টার বাটন
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
@@ -180,6 +185,33 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
   });
 });
 
+// ক্যাটাগরি টাইপ অনুযায়ী
+const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
+const expenseCategories = [
+  "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
+  "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "মেডিক্যাল",
+  "গ্যাস", "ব্যক্তিগত", "অন্যান্য"
+];
+
+document.getElementById("type").addEventListener("change", function () {
+  const type = this.value;
+  const categorySelect = document.getElementById("category");
+  categorySelect.innerHTML = "";
+
+  const categories = type === "income" ? incomeCategories : expenseCategories;
+  categories.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    categorySelect.appendChild(option);
+  });
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("type").dispatchEvent(new Event("change"));
+});
+
+// লগআউট
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
