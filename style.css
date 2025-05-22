@@ -335,9 +335,13 @@ body {
 .monthdaytable th,
 .monthdaytable td,
 .monthly-summary td {
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   padding: 12px;
   text-align: center;
+    background-color: #007bff;
+  color: white;
+}
+
 }
 
 .monthdaytable thead {
