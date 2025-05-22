@@ -81,16 +81,16 @@
       </table>
     </div>
 
-    <div class="Filter-tabel">
-      <div>
+    <div class="Filter-monthday">
+      <div class ="monthday">
       <h2>মাস ও তারিখ ফিল্টার </h2>
         <label>তারিখ নির্বাচন করুন:</label>
-        <input class="form-input" type="date" id="dateFilter" />
+        <input type="date" id="dateFilter" />
         <label>মাস নির্বাচন করুন:</label>
-        <input class="form-input" type="month" id="monthFilter" />
-        <button class="form-button" id="resetFilterBtn">রিসেট</button>
+        <input type="month" id="monthFilter" />
+        <button id="resetFilterBtn">রিসেট</button>
       </div>
-
+<div class="monthdaytable">
       <table id="filteredTable" border="1" style="margin-top: 10px; width: 100%;">
         <thead>
           <tr>
@@ -102,7 +102,8 @@
         </thead>
         <tbody></tbody>
       </table>
-
+</div>
+     <div class="monthly-summary">
       <table id="monthlySummary" style="display:none">
   <tr><td>আগের ব্যালেন্স:</td><td id="prevBalance"></td></tr>
   <tr><td>মাসিক আয়:</td><td id="monthlyIncome"></td></tr>
@@ -110,6 +111,7 @@
   <tr><td>মোট ব্যালেন্স:</td><td id="totalBalance"></td></tr>
 </table>
     </div>
+      </div>
 
     <div id="charts-container">
       <div id="categoryChart"></div>
