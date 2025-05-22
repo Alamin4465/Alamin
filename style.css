@@ -200,15 +200,25 @@ body {
   color: white;
 }
 
-.row-income {
-  background-color: #e6ffe6; /* হালকা সবুজ ব্যাকগ্রাউন্ড */
-  color: #008000;            /* গাঢ় সবুজ লেখার রঙ */
-  font-weight: bold;
+./* আয় এর রো */
+.income-row {
+  background-color: #e0f7e9; /* হালকা সবুজ */
+  color: green;
 }
 
-.row-expense {
-  background-color: #ffe6e6; /* হালকা লাল ব্যাকগ্রাউন্ড */
-  color: #cc0000;            /* গাঢ় লাল লেখার রঙ */
+/* ব্যয় এর রো */
+.expense-row {
+  background-color: #fdeaea; /* হালকা লাল */
+  color: red;
+}
+
+/* লেখার রঙ */
+.text-green {
+  color: green;
+  font-weight: bold;
+}
+.text-red {
+  color: red;
   font-weight: bold;
 }
 
