@@ -184,4 +184,77 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
   });
+});    .doc(user.uid)
+    .collection("transactions")
+    .add({
+      date,
+      type,
+      category,
+      amount,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(() => {
+      document.getElementById("transactionForm").reset();
+      loadFullSummary(user.uid);
+    });
+}
+
+document.getElementById("transactionForm").addEventListener("submit", submitHandler);
+
+document.querySelector("#transactionTable tbody").addEventListener("click", e => {
+  const user = firebase.auth().currentUser;
+  const docId = e.target.getAttribute("data-id");
+  const docRef = firebase.firestore().collection("users").doc(user.uid).collection("transactions").doc(docId);
+
+  if (e.target.classList.contains("deleteBtn")) {
+    if (confirm("আপনি কি ডিলিট করতে চান?")) {
+      docRef.delete().then(() => loadFullSummary(user.uid));
+    }
+  }
+
+  if (e.target.classList.contains("editBtn")) {
+    docRef.get().then(doc => {
+      const data = doc.data();
+      document.getElementById("date").value = data.date || "";
+      document.getElementById("type").value = data.type || "";
+      document.getElementById("type").dispatchEvent(new Event("change"));
+      document.getElementById("category").value = data.category || "";
+      document.getElementById("amount").value = data.amount || "";
+
+      document.getElementById("transactionForm").onsubmit = function (ev) {
+        ev.preventDefault();
+        const updatedData = {
+          date: document.getElementById("date").value,
+          type: document.getElementById("type").value,
+          category: document.getElementById("category").value,
+          amount: parseFloat(document.getElementById("amount").value),
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        docRef.update(updatedData).then(() => {
+          document.getElementById("transactionForm").reset();
+          document.getElementById("transactionForm").onsubmit = submitHandler;
+          loadFullSummary(user.uid);
+        });
+      };
+    });
+  }
+});
+
+document.querySelectorAll(".filterBtn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentFilter = btn.getAttribute("data-filter");
+
+    const user = firebase.auth().currentUser;
+    if (user) {
+      loadTransactions(user.uid);
+    }
+  });
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  firebase.auth().signOut().then(() => {
+    window.location.href = "login.html";
+  });
 });
