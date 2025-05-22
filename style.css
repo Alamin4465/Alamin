@@ -200,17 +200,16 @@ body {
   color: white;
 }
 
-/* আয়: সবুজ ব্যাকগ্রাউন্ড ও সবুজ ফন্ট */
-.type-income {
-  color: green;
+.row-income {
+  background-color: #e6ffe6; /* হালকা সবুজ ব্যাকগ্রাউন্ড */
+  color: #008000;            /* গাঢ় সবুজ লেখার রঙ */
   font-weight: bold;
-  background-color: #eaffea;
 }
 
-.type-expense {
-  color: red;
+.row-expense {
+  background-color: #ffe6e6; /* হালকা লাল ব্যাকগ্রাউন্ড */
+  color: #cc0000;            /* গাঢ় লাল লেখার রঙ */
   font-weight: bold;
-  background-color: #ffeaea;
 }
 
 /* বাটন ডিজাইন */
