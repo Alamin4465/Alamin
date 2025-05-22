@@ -12,11 +12,6 @@ document.getElementById("monthFilter").addEventListener("change", () => {
   if (month) {
     const user = firebase.auth().currentUser;
     if (user) {
-      const formattedMonth = new Date(month + "-01").toLocaleString("en-US", {
-        year: "numeric",
-        month: "short"
-      });
-      document.getElementById("monthName").textContent = formattedMonth;
       filterByMonth(user.uid, month);
       calculateMonthlySummary(user.uid, month);
     }
@@ -43,9 +38,9 @@ function filterByDate(userId, date) {
     .then(snapshot => {
       snapshot.forEach(doc => {
         const data = doc.data();
-        const tr = document.createElement("tr");
         const income = data.type === "income" ? formatTaka(data.amount) : "";
         const expense = data.type === "expense" ? formatTaka(data.amount) : "";
+        const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${data.date || ""}</td>
           <td>${data.category || ""}</td>
@@ -98,7 +93,6 @@ function calculateMonthlySummary(userId, month) {
   currentMonthEnd.setMonth(currentMonthEnd.getMonth() + 1);
 
   const prevMonthStart = new Date(currentMonthStart);
-  const prevMonthEnd = new Date(currentMonthStart);
   prevMonthStart.setMonth(prevMonthStart.getMonth() - 1);
 
   let monthlyIncome = 0;
@@ -132,13 +126,54 @@ function calculateMonthlySummary(userId, month) {
       });
 
       const total = prevBalance + monthlyIncome - monthlyExpense;
+      const monthName = new Date(currentMonthStart).toLocaleString("en-US", {
+        month: "short",
+        year: "2-digit",
+      });
 
-      document.getElementById("prevBalance").textContent = formatTaka(prevBalance);
-      document.getElementById("monthlyIncome").textContent = formatTaka(monthlyIncome);
-      document.getElementById("monthlyExpense").textContent = formatTaka(monthlyExpense);
-      document.getElementById("totalBalance").textContent = formatTaka(total);
-
-      document.getElementById("monthlySummary").style.display = "table";
+      const summaryTable = document.getElementById("monthlySummary");
+      summaryTable.innerHTML = `
+        <thead>
+          <tr>
+            <th>মাস</th>
+            <th>বিবরণ</th>
+            <th>আয় টাকা</th>
+            <th>ব্যয় টাকা</th>
+            <th>টাকা</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${monthName}</td>
+            <td>লাস্ট টাকা</td>
+            <td></td>
+            <td></td>
+            <td>${formatTaka(prevBalance)}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>আয়</td>
+            <td>${formatTaka(monthlyIncome)}</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>ব্যয়</td>
+            <td></td>
+            <td>${formatTaka(monthlyExpense)}</td>
+            <td>${formatTaka(prevBalance + monthlyIncome - monthlyExpense)}</td>
+          </tr>
+          <tr>
+            <td></td>
+            <td>মোট টাকা</td>
+            <td></td>
+            <td></td>
+            <td>${formatTaka(total)}</td>
+          </tr>
+        </tbody>
+      `;
+      summaryTable.style.display = "table";
     });
 }
 
