@@ -291,7 +291,7 @@ body {
 
 .monthday h2 {
   text-align: center;
-  color: #2c3e50;
+  color: #007bff;
   margin-bottom: 20px;
 }
 
@@ -303,14 +303,14 @@ body {
 .monthday input {
   padding: 10px;
   margin: 5px 10px 15px 0;
-  border: 1px solid #ccc;
+  border: 1px solid #007bff;
   border-radius: 6px;
   font-size: 16px;
 }
 
 #resetFilterBtn {
   padding: 10px 20px;
-  background-color: #2980b9;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -319,7 +319,7 @@ body {
 }
 
 #resetFilterBtn:hover {
-  background-color: #1c5987;
+  background-color: red;
 }
 
 /* ফিল্টারড টেবিল ডিজাইন */
@@ -344,36 +344,7 @@ body {
 }
 
 .monthdaytable thead {
-  background-color: #27ae60;
+   background-color: #007bff;
+  color: #333;;
   color: #fff;
-}
-
-.monthly-summary {
-  margin-top: 20px;
-}
-
-#monthlySummary {
-  background-color: #f8f8f8;
-  font-weight: bold;
-}
-
-#monthlySummary td:first-child {
-  background-color: #ecf0f1;
-  width: 60%;
-  text-align: right;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .monthday {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .monthday input,
-  #resetFilterBtn {
-    width: 100%;
-    margin-bottom: 10px;
-  }
 }
