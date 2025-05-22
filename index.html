@@ -102,13 +102,45 @@
         <tbody></tbody>
       </table>
 
-      <div id="monthlySummary" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; display: none;">
-        <h3>মাসিক সামারি</h3>
-        <p>গত মাসের টাকা: <span id="prevBalance">0</span> টাকা</p>
-        <p>বর্তমান মাসের আয়: <span id="monthlyIncome">0</span> টাকা</p>
-        <p>বর্তমান মাসের ব্যয়: <span id="monthlyExpense">0</span> টাকা</p>
-        <p><strong>মোট টাকা: <span id="totalBalance">0</span> টাকা</strong></p>
-      </div>
+      <table id="monthlySummary" style="display: none; border-collapse: collapse; margin-top: 20px; width: 100%; font-family: 'Arial', sans-serif;">
+  <thead>
+    <tr style="background-color: #5f4ebd; color: orange; font-weight: bold;">
+      <th>Month Name</th>
+      <th>Catagory</th>
+      <th>Income Taka</th>
+      <th>Expenses Taka</th>
+      <th>Taka</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="background-color: #f2f2f2; font-weight: bold; color: red;">
+      <td rowspan="4" id="monthName"></td>
+      <td>Last Balance</td>
+      <td></td>
+      <td></td>
+      <td id="prevBalance"></td>
+    </tr>
+    <tr style="font-weight: bold;">
+      <td>Income</td>
+      <td id="monthlyIncome"></td>
+      <td></td>
+      <td>৳0.00</td>
+    </tr>
+    <tr style="font-weight: bold;">
+      <td>Expenses</td>
+      <td></td>
+      <td id="monthlyExpense"></td>
+      <td>৳0.00</td>
+    </tr>
+    <tr>
+      <td colspan="5" style="background-color: yellow; height: 5px;"></td>
+    </tr>
+    <tr style="background-color: #e94b35; font-weight: bold; color: #fff;">
+      <td colspan="4" style="text-align: right;">Balance</td>
+      <td id="totalBalance" style="color: skyblue;"></td>
+    </tr>
+  </tbody>
+</table>
     </div>
 
     <div id="charts-container">
