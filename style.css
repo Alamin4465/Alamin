@@ -277,3 +277,20 @@ body {
     font-size: 18px;
   }
 }
+
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th, table td {
+  border: 1px solid #333;
+  padding: 8px;
+  text-align: center;
+}
+
+h1, h2 {
+  color: #444;
+}
