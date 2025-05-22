@@ -78,10 +78,12 @@ function loadTransactions(userId) {
 
         allTransactions.push(data);
 
+        const typeClass = type === "income" ? "type-income" : "type-expense";
+
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${data.date || ""}</td>
-          <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
+          <td class="${typeClass}">${type === "income" ? "আয়" : "ব্যয়"}</td>
           <td>${data.category || ""}</td>
           <td>${toBanglaNumber(amount)}</td>
           <td>
