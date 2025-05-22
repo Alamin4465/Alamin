@@ -1,6 +1,5 @@
-let currentFilter = null;
+let currentFilter = "all";
 let allTransactions = [];
-let chart;
 
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
@@ -9,6 +8,7 @@ firebase.auth().onAuthStateChanged(user => {
     document.querySelector(".container").style.display = "block";
     loadFullSummary(user.uid);
     loadUserInfo(user);
+    loadTransactions(user.uid);
   }
 });
 
@@ -55,8 +55,6 @@ function loadFullSummary(userId) {
 }
 
 function loadTransactions(userId) {
-  if (!currentFilter) return;
-
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
   tbody.innerHTML = "";
@@ -78,10 +76,9 @@ function loadTransactions(userId) {
 
         allTransactions.push(data);
 
-        const typeClass = type === "income" ? "row-income" : "row-expense";
-
         const row = document.createElement("tr");
-        row.className = typeClass;
+        row.className = type === "income" ? "income-row" : "expense-row"; // রঙ নির্ধারণ
+
         row.innerHTML = `
           <td>${data.date || ""}</td>
           <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
@@ -94,12 +91,10 @@ function loadTransactions(userId) {
         `;
         tbody.appendChild(row);
       });
-
-      renderChart(allTransactions, currentFilter);
     });
 }
 
-function submitHandler(e) {
+document.getElementById("transactionForm").addEventListener("submit", function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -124,9 +119,7 @@ function submitHandler(e) {
       document.getElementById("transactionForm").reset();
       loadFullSummary(user.uid);
     });
-}
-
-document.getElementById("transactionForm").addEventListener("submit", submitHandler);
+});
 
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
