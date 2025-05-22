@@ -252,6 +252,43 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
     }
   });
 });
+// ক্যাটাগরির তালিকা
+const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
+const expenseCategories = [
+  "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
+  "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "মেডিক্যাল",
+  "গ্যাস", "ব্যক্তিগত", "অন্যান্য"
+];
+
+// টাইপ পরিবর্তনে ক্যাটাগরি আপডেট
+document.getElementById("type").addEventListener("change", function () {
+  const type = this.value; // income বা expense
+  const categorySelect = document.getElementById("category");
+
+  // পুরনো অপশন ক্লিয়ার
+  categorySelect.innerHTML = "";
+
+  // টাইপ অনুযায়ী ক্যাটাগরি লোড
+  const categories = type === "income" ? incomeCategories : expenseCategories;
+
+  categories.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    categorySelect.appendChild(option);
+  });
+});
+
+// পেজ লোডে টাইপ অনুযায়ী ক্যাটাগরি দেখানো (যদি প্রি-সিলেক্টেড থাকে)
+window.addEventListener("DOMContentLoaded", () => {
+  const type = document.getElementById("type").value;
+  const event = new Event("change");
+  document.getElementById("type").dispatchEvent(event);
+});
+
+
+
+
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
