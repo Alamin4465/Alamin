@@ -181,39 +181,28 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
   });
 });
 
-// ক্যাটাগরির তালিকা
-const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
-const expenseCategories = [
-  "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
-  "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "মেডিক্যাল",
-  "গ্যাস", "ব্যক্তিগত", "অন্যান্য"
-];
+// ক্যাটেগরি লিস্ট
+    const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
+    const expenseCategories = [
+      "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
+      "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "হাস্পাতাল",
+      "ব্যক্তিগত", "অন্যান্য"
+    ];
 
-// টাইপ পরিবর্তনে ক্যাটাগরি আপডেট
-document.getElementById("type").addEventListener("change", function () {
-  const type = this.value;
-  const categorySelect = document.getElementById("category");
+    // টাইপ অনুযায়ী ক্যাটেগরি লোড
+    document.getElementById("type").addEventListener("change", function () {
+      const type = this.value;
+      const categorySelect = document.getElementById("category");
+      categorySelect.innerHTML = '<option value="">ক্যাটেগরি নির্বাচন করুন</option>';
 
-  // পুরনো অপশন ক্লিয়ার
-  categorySelect.innerHTML = "";
-
-  // নতুন ক্যাটাগরি লোড
-  const categories = type === "income" ? incomeCategories : expenseCategories;
-
-  categories.forEach(cat => {
-    const option = document.createElement("option");
-    option.value = cat;
-    option.textContent = cat;
-    categorySelect.appendChild(option);
-  });
-});
-
-// পেজ লোডে টাইপ অনুযায়ী ক্যাটাগরি দেখানো
-window.addEventListener("DOMContentLoaded", () => {
-  const event = new Event("change");
-  document.getElementById("type").dispatchEvent(event);
-});
-
+      const categories = type === "income" ? incomeCategories : type === "expense" ? expenseCategories : [];
+      categories.forEach(cat => {
+        const option = document.createElement("option");
+        option.value = cat;
+        option.textContent = cat;
+        categorySelect.appendChild(option);
+      });
+    });
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
