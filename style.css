@@ -200,26 +200,14 @@ body {
   color: white;
 }
 
-./* আয় এর রো */
 .income-row {
   background-color: #e0f7e9; /* হালকা সবুজ */
   color: green;
 }
 
-/* ব্যয় এর রো */
 .expense-row {
   background-color: #fdeaea; /* হালকা লাল */
   color: red;
-}
-
-/* লেখার রঙ */
-.text-green {
-  color: green;
-  font-weight: bold;
-}
-.text-red {
-  color: red;
-  font-weight: bold;
 }
 
 /* বাটন ডিজাইন */
