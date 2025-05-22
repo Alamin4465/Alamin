@@ -78,12 +78,13 @@ function loadTransactions(userId) {
 
         allTransactions.push(data);
 
-        const typeClass = type === "income" ? "type-income" : "type-expense";
+        const typeClass = type === "income" ? "row-income" : "row-expense";
 
         const row = document.createElement("tr");
+        row.className = typeClass;
         row.innerHTML = `
           <td>${data.date || ""}</td>
-          <td class="${typeClass}">${type === "income" ? "আয়" : "ব্যয়"}</td>
+          <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
           <td>${data.category || ""}</td>
           <td>${toBanglaNumber(amount)}</td>
           <td>
@@ -98,7 +99,7 @@ function loadTransactions(userId) {
     });
 }
 
-document.getElementById("transactionForm").addEventListener("submit", function submitHandler(e) {
+function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
   if (!user) return;
@@ -123,7 +124,9 @@ document.getElementById("transactionForm").addEventListener("submit", function s
       document.getElementById("transactionForm").reset();
       loadFullSummary(user.uid);
     });
-});
+}
+
+document.getElementById("transactionForm").addEventListener("submit", submitHandler);
 
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
