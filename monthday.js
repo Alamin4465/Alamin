@@ -12,6 +12,11 @@ document.getElementById("monthFilter").addEventListener("change", () => {
   if (month) {
     const user = firebase.auth().currentUser;
     if (user) {
+      const formattedMonth = new Date(month + "-01").toLocaleString("en-US", {
+        year: "numeric",
+        month: "short"
+      });
+      document.getElementById("monthName").textContent = formattedMonth;
       filterByMonth(user.uid, month);
       calculateMonthlySummary(user.uid, month);
     }
@@ -21,7 +26,7 @@ document.getElementById("monthFilter").addEventListener("change", () => {
 document.getElementById("resetFilterBtn").addEventListener("click", () => {
   document.getElementById("dateFilter").value = "";
   document.getElementById("monthFilter").value = "";
-  document.getElementById("filteredTable").querySelector("tbody").innerHTML = "";
+  document.querySelector("#filteredTable tbody").innerHTML = "";
   document.getElementById("monthlySummary").style.display = "none";
 });
 
@@ -39,8 +44,8 @@ function filterByDate(userId, date) {
       snapshot.forEach(doc => {
         const data = doc.data();
         const tr = document.createElement("tr");
-        const income = data.type === "income" ? data.amount : "";
-        const expense = data.type === "expense" ? data.amount : "";
+        const income = data.type === "income" ? formatTaka(data.amount) : "";
+        const expense = data.type === "expense" ? formatTaka(data.amount) : "";
         tr.innerHTML = `
           <td>${data.date || ""}</td>
           <td>${data.category || ""}</td>
@@ -72,8 +77,8 @@ function filterByMonth(userId, month) {
     .then(snapshot => {
       snapshot.forEach(doc => {
         const data = doc.data();
-        const income = data.type === "income" ? data.amount : "";
-        const expense = data.type === "expense" ? data.amount : "";
+        const income = data.type === "income" ? formatTaka(data.amount) : "";
+        const expense = data.type === "expense" ? formatTaka(data.amount) : "";
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${data.date || ""}</td>
@@ -128,11 +133,18 @@ function calculateMonthlySummary(userId, month) {
 
       const total = prevBalance + monthlyIncome - monthlyExpense;
 
-      document.getElementById("prevBalance").textContent = prevBalance.toFixed(2);
-      document.getElementById("monthlyIncome").textContent = monthlyIncome.toFixed(2);
-      document.getElementById("monthlyExpense").textContent = monthlyExpense.toFixed(2);
-      document.getElementById("totalBalance").textContent = total.toFixed(2);
+      document.getElementById("prevBalance").textContent = formatTaka(prevBalance);
+      document.getElementById("monthlyIncome").textContent = formatTaka(monthlyIncome);
+      document.getElementById("monthlyExpense").textContent = formatTaka(monthlyExpense);
+      document.getElementById("totalBalance").textContent = formatTaka(total);
 
-      document.getElementById("monthlySummary").style.display = "block";
+      document.getElementById("monthlySummary").style.display = "table";
     });
+}
+
+function formatTaka(amount) {
+  return "৳" + Number(amount).toLocaleString("en-BD", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
