@@ -70,8 +70,8 @@ function filterByMonth(userId, month) {
   db.collection("users")
     .doc(userId)
     .collection("transactions")
-    .where("timestamp", ">=", start)
-    .where("timestamp", "<", end)
+    .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(start))
+    .where("timestamp", "<", firebase.firestore.Timestamp.fromDate(end))
     .orderBy("timestamp", "asc")
     .get()
     .then(snapshot => {
@@ -109,8 +109,8 @@ function calculateMonthlySummary(userId, month) {
   const transactionRef = db.collection("users").doc(userId).collection("transactions");
 
   transactionRef
-    .where("timestamp", ">=", prevMonthStart)
-    .where("timestamp", "<", currentMonthStart)
+    .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(prevMonthStart))
+    .where("timestamp", "<", firebase.firestore.Timestamp.fromDate(currentMonthStart))
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
@@ -120,8 +120,8 @@ function calculateMonthlySummary(userId, month) {
       });
 
       return transactionRef
-        .where("timestamp", ">=", currentMonthStart)
-        .where("timestamp", "<", currentMonthEnd)
+        .where("timestamp", ">=", firebase.firestore.Timestamp.fromDate(currentMonthStart))
+        .where("timestamp", "<", firebase.firestore.Timestamp.fromDate(currentMonthEnd))
         .get();
     })
     .then(snapshot => {
@@ -143,7 +143,7 @@ function calculateMonthlySummary(userId, month) {
 }
 
 function formatTaka(amount) {
-  return "৳" + Number(amount).toLocaleString("en-BD", {
+  return "৳" + Number(amount).toLocaleString("bn-BD", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
