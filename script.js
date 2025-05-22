@@ -79,18 +79,19 @@ function loadTransactions(userId) {
         allTransactions.push(data);
 
         const typeClass = type === "income" ? "row-income" : "row-expense";
-        const row = document.createElement("tr");
-        row.className = typeClass;
-        row.innerHTML = `
-          <td>${data.date || ""}</td>
-          <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
-          <td>${data.category || ""}</td>
-          <td>${toBanglaNumber(amount)}</td>
-          <td>
-            <button class="editBtn" data-id="${doc.id}">এডিট</button>
-            <button class="deleteBtn" data-id="${doc.id}">ডিলিট</button>
-          </td>
-        `;
+
+const row = document.createElement("tr");
+row.className = typeClass;
+row.innerHTML = `
+  <td>${data.date || ""}</td>
+  <td>${type === "income" ? "আয়" : "ব্যয়"}</td>
+  <td>${data.category || ""}</td>
+  <td>${toBanglaNumber(amount)}</td>
+  <td>
+    <button class="editBtn" data-id="${doc.id}">এডিট</button>
+    <button class="deleteBtn" data-id="${doc.id}">ডিলিট</button>
+  </td>
+`;
         tbody.appendChild(row);
       });
 
