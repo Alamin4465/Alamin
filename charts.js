@@ -73,20 +73,12 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-
-
-let summaryChartInstance;
-
-function formatTaka(amount) {
-  return "৳" + Number(amount).toLocaleString("en-BD", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
+let summaryChartInstance = null;
 
 function renderSummaryChart(labelText, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
+  // পুরানো চার্ট থাকলে ধ্বংস করো
   if (summaryChartInstance) {
     summaryChartInstance.destroy();
   }
@@ -99,22 +91,37 @@ function renderSummaryChart(labelText, income, expense) {
       labels: ["আয়", "ব্যয়"],
       datasets: [{
         data: [income, expense],
-        backgroundColor: ["#28a745", "#dc3545"],
-        borderColor: ["#fff", "#fff"],
-        borderWidth: 1
+        backgroundColor: ["#28a745", "#dc3545"], // আয়: সবুজ, ব্যয়: লাল
+        borderColor: ["#ffffff", "#ffffff"],
+        borderWidth: 2
       }]
     },
     options: {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
-          labels: { font: { size: 14 } }
+          position: "top",
+          labels: {
+            font: {
+              size: 14
+            }
+          }
         },
         title: {
           display: true,
           text: `${labelText} | মোট: ${formatTaka(total)}`,
-          font: { size: 18 }
+          font: {
+            size: 16
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.parsed;
+              const label = context.label;
+              return `${label}: ${formatTaka(value)}`;
+            }
+          }
         }
       }
     }
