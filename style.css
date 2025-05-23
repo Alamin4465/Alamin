@@ -353,6 +353,7 @@ body {
 #monthlySummary td {
   border: 2px solid #000;
   padding: 8px;
+    font-weight: bold;
 }
 
 #monthlySummary thead tr {
@@ -367,11 +368,13 @@ body {
 
 #monthlySummary tbody tr:nth-child(1) td:nth-child(2) {
   color: red;
+    font-weight: bold;
 }
 
 #monthlySummary tbody tr:nth-child(3) td:nth-child(4),
 #monthlySummary tbody tr:nth-child(3) td:nth-child(5) {
   color: red;
+    font-weight: bold;
 }
 
 #monthlySummary tbody tr:last-child {
