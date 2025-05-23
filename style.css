@@ -330,6 +330,7 @@ body {
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-weight: bold;
 }
 
 .monthdaytable th,
@@ -338,6 +339,7 @@ body {
   border: 1px solid #ccc;
   padding: 12px;
   text-align: center;
+    font-weight: bold;
     
 
 }
@@ -347,6 +349,7 @@ body {
   width: 100%;
   font-family: Arial, sans-serif;
   text-align: center;
+    font-weight: bold;
 }
 
 #monthlySummary th,
@@ -359,6 +362,7 @@ body {
 #monthlySummary thead tr {
   background-color: #663399;
   color: orange;
+    font-weight: bold;
 }
 
 #monthlySummary tbody tr:nth-child(1) td {
