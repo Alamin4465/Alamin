@@ -159,21 +159,21 @@ function calculateMonthlySummary(userId, month) {
             <td>${formatTaka(prevBalance)}</td>
           </tr>
           <tr>
-            <td></td>
+            
             <td>মাসের আয়</td>
             <td>${formatTaka(monthlyIncome)}</td>
             <td></td>
             <td></td>
           </tr>
           <tr>
-            <td></td>
+            
             <td>মাসের ব্যয়</td>
             <td></td>
             <td>${formatTaka(monthlyExpense)}</td>
             <td>${formatTaka(total)}</td>
           </tr>
           <tr>
-            <td></td>
+          
             <td>মোট</td>
             <td></td>
             <td></td>
