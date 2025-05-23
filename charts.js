@@ -74,11 +74,6 @@ let chartInstance = null;
 function updateMonthlyChart(month, income, expense, balance) {
   const ctx = document.getElementById("monthlyChart").getContext("2d");
 
-  // আগের চার্ট থাকলে ডিলিট করো
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
-
   const monthLabel = new Date(`${month}-01`).toLocaleString("bn-BD", {
     month: "short",
     year: "numeric"
