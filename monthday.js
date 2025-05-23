@@ -248,21 +248,20 @@ function calculateDailySummary(userId, date) {
             <td>${formatTaka(prevBalance)}</td>
           </tr>
           <tr>
-            <td></td>
+            
             <td>আজকের আয়</td>
             <td>${formatTaka(income)}</td>
             <td></td>
             <td></td>
           </tr>
           <tr>
-            <td></td>
             <td>আজকের ব্যয়</td>
             <td></td>
             <td>${formatTaka(expense)}</td>
             <td>${formatTaka(prevBalance + income - expense)}</td>
           </tr>
           <tr>
-            <td></td>
+            
             <td>মোট</td>
             <td></td>
             <td></td>
