@@ -181,8 +181,9 @@ function calculateMonthlySummary(userId, month) {
         </tbody>
       `;
       summaryTable.style.display = "table";
+      updateMonthlyChart(month, monthlyIncome, monthlyExpense, total);
     });
-  updateMonthlyChart(month, monthlyIncome, monthlyExpense, total);
+  
 }
 
 // তারিখ ভিত্তিক সামারি
