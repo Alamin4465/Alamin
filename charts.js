@@ -69,33 +69,51 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-function updateMonthlyChart(month, income, expense, total) {
-  // উদাহরণ: চার্ট.js ব্যবহার করে বার চার্ট আপডেট
+let chartInstance = null;
+
+function updateMonthlyChart(month, income, expense, balance) {
   const ctx = document.getElementById("monthlyChart").getContext("2d");
 
-  if (window.monthlyChartInstance) {
-    window.monthlyChartInstance.destroy();
+  // আগের চার্ট থাকলে ডিলিট করো
+  if (chartInstance) {
+    chartInstance.destroy();
   }
 
-  window.monthlyChartInstance = new Chart(ctx, {
+  const monthLabel = new Date(`${month}-01`).toLocaleString("bn-BD", {
+    month: "short",
+    year: "numeric"
+  });
+
+  chartInstance = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: ["আয়", "ব্যয়", "মোট"],
-      datasets: [{
-        label: month,
-        data: [income, expense, total],
-        backgroundColor: ["green", "red", "blue"]
-      }]
+      labels: ["আয়", "ব্যয়", "অবশিষ্ট"],
+      datasets: [
+        {
+          label: `${monthLabel} এর চার্ট`,
+          data: [income, expense, balance],
+          backgroundColor: ["#4CAF50", "#F44336", "#2196F3"]
+        }
+      ]
     },
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         title: {
           display: true,
-          text: `${month} মাসের সারসংক্ষেপ`
+          text: `${monthLabel} এর আয়-ব্যয় চিত্র`,
+          font: { size: 18 }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function (value) {
+              return "৳" + value.toLocaleString("en-BD");
+            }
+          }
         }
       }
     }
