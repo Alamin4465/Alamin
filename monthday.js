@@ -173,9 +173,8 @@ function calculateMonthlySummary(userId, month) {
           </tr>
           <tr>
           
-            <td>মোট</td>
-            <td></td>
-            <td></td>
+            <td colspan="3">মোট</td>
+            
             <td>${formatTaka(total)}</td>
           </tr>
         </tbody>
@@ -262,9 +261,8 @@ function calculateDailySummary(userId, date) {
           </tr>
           <tr>
             
-            <td>মোট</td>
-            <td></td>
-            <td></td>
+            <td colspan="3">মোট</td>
+            
             <td>${formatTaka(total)}</td>
           </tr>
         </tbody>
