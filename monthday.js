@@ -242,9 +242,8 @@ function calculateDailySummary(userId, date) {
         <tbody>
           <tr>
             <td>${dateLabel}</td>
-            <td>শেষ টাকা</td>
-            <td></td>
-            <td></td>
+            <td colspan="3">শেষ টাকা</td>
+            
             <td>${formatTaka(prevBalance)}</td>
           </tr>
           <tr>
