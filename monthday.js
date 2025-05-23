@@ -153,9 +153,8 @@ function calculateMonthlySummary(userId, month) {
         <tbody>
           <tr>
             <td rowspan="4" style="border: 2px solid #000; color: black;">${monthName}</td>
-            <td>শেষ টাকা</td>
-            <td></td>
-            <td></td>
+            <td colspan="3">মাসের শেষ টাকা</td>
+            
             <td>${formatTaka(prevBalance)}</td>
           </tr>
           <tr>
