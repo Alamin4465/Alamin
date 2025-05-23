@@ -69,53 +69,35 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-let monthlyChart;
-
 function updateMonthlyChart(month, income, expense, total) {
-  const monthLabel = new Date(`${month}-01`).toLocaleString("bn-BD", {
-    month: "short",
-    year: "numeric"
-  });
+  // উদাহরণ: চার্ট.js ব্যবহার করে বার চার্ট আপডেট
+  const ctx = document.getElementById("monthlyChart").getContext("2d");
 
-  const data = {
-    labels: ["আয়", "ব্যয়", "টাকা"],
-    datasets: [
-      {
-        label: monthLabel,
-        data: [income, expense, total],
-        backgroundColor: ["#4caf50", "#f44336", "#2196f3"]
-      }
-    ]
-  };
+  if (window.monthlyChartInstance) {
+    window.monthlyChartInstance.destroy();
+  }
 
-  const config = {
+  window.monthlyChartInstance = new Chart(ctx, {
     type: "bar",
-    data: data,
+    data: {
+      labels: ["আয়", "ব্যয়", "মোট"],
+      datasets: [{
+        label: month,
+        data: [income, expense, total],
+        backgroundColor: ["green", "red", "blue"]
+      }]
+    },
     options: {
       responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function(value) {
-              return "৳" + value.toLocaleString("en-BD");
-            }
-          }
-        }
-      },
       plugins: {
         legend: {
           display: false
+        },
+        title: {
+          display: true,
+          text: `${month} মাসের সারসংক্ষেপ`
         }
       }
     }
-  };
-
-  if (monthlyChart) {
-    monthlyChart.data = data;
-    monthlyChart.update();
-  } else {
-    const ctx = document.getElementById("monthlyChartCanvas").getContext("2d");
-    monthlyChart = new Chart(ctx, config);
-  }
+  });
 }
