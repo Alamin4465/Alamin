@@ -179,6 +179,7 @@ function calculateMonthlySummary(userId, month) {
         </tbody>
       `;
       summaryTable.style.display = "table";
+      renderSummaryChart(`${monthName} - আয় বনাম ব্যয়`, monthlyIncome, monthlyExpense);
     });
 }
 
@@ -264,6 +265,7 @@ function calculateDailySummary(userId, date) {
         </tbody>
       `;
       summaryTable.style.display = "table";
+      renderSummaryChart(`${dateLabel} - আয় বনাম ব্যয়`, income, expense);
     });
 }
 
