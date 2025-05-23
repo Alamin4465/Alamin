@@ -152,37 +152,36 @@ function calculateMonthlySummary(userId, month) {
         </thead>
         <tbody>
           <tr>
-            <td rowspan="4" style="border: 2px solid #000; color: black;font-weight: bold;">${monthName}</td>
-            <td colspan="3" style="font-weight: bold;">মাসের শেষ টাকা</td>
-            
-            <td style="font-weight: bold;">${formatTaka(prevBalance)}</td>
+            <td rowspan="4" style="border: 2px solid #000; color: black;">${monthName}</td>
+            <td>শেষ টাকা</td>
+            <td></td>
+            <td></td>
+            <td>${formatTaka(prevBalance)}</td>
           </tr>
           <tr>
             
-            <td style="font-weight: bold;">মাসের আয়</td>
-            <td style="font-weight: bold;">${formatTaka(monthlyIncome)}</td>
+            <td>মাসের আয়</td>
+            <td>${formatTaka(monthlyIncome)}</td>
             <td></td>
             <td></td>
           </tr>
           <tr>
             
-            <td style="font-weight: bold;">মাসের ব্যয়</td>
+            <td>মাসের ব্যয়</td>
             <td></td>
-            <td style="font-weight: bold;">${formatTaka(monthlyExpense)}</td>
-            <tdstyle="font-weight: bold;">${formatTaka(total)}</td>
+            <td>${formatTaka(monthlyExpense)}</td>
+            <td>${formatTaka(total)}</td>
           </tr>
           <tr>
           
-            <td colspan="3" style="font-weight: bold;">মোট</td>
+            <td colspan="3">মোট</td>
             
-            <td style="font-weight: bold;">${formatTaka(total)}</td>
+            <td>${formatTaka(total)}</td>
           </tr>
         </tbody>
       `;
       summaryTable.style.display = "table";
-      updateMonthlyChart(month, monthlyIncome, monthlyExpense, total);
     });
-  
 }
 
 // তারিখ ভিত্তিক সামারি
@@ -241,29 +240,28 @@ function calculateDailySummary(userId, date) {
         </thead>
         <tbody>
           <tr>
-            <td rowspan="4" style="border: 2px solid #000; color: black;">${dateLabel}</td>
-            <td  colspan="3" style="font-weight: bold;">শেষ টাকা</td>
+            <td rowspan="4" style="font-weight: bold;">${dateLabel}</td>
+            <td colspan="3">শেষ টাকা</td>
             
-            <td style="font-weight: bold;">${formatTaka(prevBalance)}</td>
+            <td>${formatTaka(prevBalance)}</td>
           </tr>
           <tr>
             
-            <td style="font-weight: bold;">আজকের আয়</td>
-            <td style="font-weight: bold;">${formatTaka(income)}</td>
+            <td>আজকের আয়</td>
+            <td>${formatTaka(income)}</td>
             <td></td>
             <td></td>
           </tr>
           <tr>
-            <td style="font-weight: bold;">আজকের ব্যয়</td>
+            <td>আজকের ব্যয়</td>
             <td></td>
             <td>${formatTaka(expense)}</td>
             <td>${formatTaka(prevBalance + income - expense)}</td>
           </tr>
           <tr>
             
-            <td colspan="3" style="font-weight: bold;">মোট</td>
-            
-            <td style="font-weight: bold;">${formatTaka(total)}</td>
+            <td colspan="3">মোট</td>
+            <td>${formatTaka(total)}</td>
           </tr>
         </tbody>
       `;
