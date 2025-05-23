@@ -1,28 +1,20 @@
-// charts.js
-
-let categoryChartInstance;
-let summaryChartInstance;
+let chartInstance;
 
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
   return num.toString().split('').map(d => banglaDigits[d] || d).join('');
 }
 
-function formatTaka(amount) {
-  return "৳" + Number(amount).toLocaleString("en-BD", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  });
-}
-
-function renderCategoryChart(transactions, filterType = "all") {
+function renderChart(transactions, filterType = "all") {
   const categoryMap = {};
 
   transactions.forEach(txn => {
     if (filterType !== "all" && txn.type !== filterType) return;
     const category = txn.category || "অন্যান্য";
     const amount = parseFloat(txn.amount) || 0;
-    if (!categoryMap[category]) categoryMap[category] = 0;
+    if (!categoryMap[category]) {
+      categoryMap[category] = 0;
+    }
     categoryMap[category] += amount;
   });
 
@@ -42,12 +34,16 @@ function renderCategoryChart(transactions, filterType = "all") {
     legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
-      formatter: val => toBanglaNumber(val.toFixed(1)) + '%',
+      formatter: function (val) {
+        return toBanglaNumber(val.toFixed(1)) + '%';
+      },
       style: { fontSize: '14px', fontWeight: 'bold' }
     },
     tooltip: {
       y: {
-        formatter: val => toBanglaNumber(val.toFixed(2)) + ' টাকা'
+        formatter: function(val) {
+          return toBanglaNumber(val.toFixed(2)) + ' টাকা';
+        }
       }
     },
     fill: { type: 'gradient' },
@@ -56,19 +52,36 @@ function renderCategoryChart(transactions, filterType = "all") {
         expandOnClick: true,
         offsetY: 10,
         dataLabels: {
-          dropShadow: { enabled: true, top: 1, left: 1, blur: 2, opacity: 0.5 }
+          dropShadow: {
+            enabled: true,
+            top: 1,
+            left: 1,
+            blur: 2,
+            opacity: 0.5
+          }
         }
       }
     }
   };
 
-  if (categoryChartInstance) {
-    categoryChartInstance.updateOptions(options);
-    categoryChartInstance.updateSeries(values);
+  if (chartInstance) {
+    chartInstance.updateOptions(options);
+    chartInstance.updateSeries(values);
   } else {
-    categoryChartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
-    categoryChartInstance.render();
+    chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
+    chartInstance.render();
   }
+}
+
+
+
+let summaryChartInstance;
+
+function formatTaka(amount) {
+  return "৳" + Number(amount).toLocaleString("en-BD", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 function renderSummaryChart(labelText, income, expense) {
