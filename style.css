@@ -357,7 +357,7 @@ body {
   border: 2px solid #000;
   padding: 8px;
     font-weight: bold;
-    font-size: 1.6em;
+    font-size: 1.3em;
 }
 
 #monthlySummary thead tr {
@@ -368,8 +368,7 @@ body {
 
 #monthlySummary tbody tr:nth-child(1) td {
   font-weight: bold;
-  font-size: 18px;
-    font-size: 1.6em;
+    font-size: 1.3em;
 }
 
 #monthlySummary tbody tr:nth-child(1) td:nth-child(2) {
