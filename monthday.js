@@ -152,7 +152,7 @@ function calculateMonthlySummary(userId, month) {
         </thead>
         <tbody>
           <tr>
-            <td>${monthName}</td>
+            <td rowspan="4" style="border: 2px solid #000; color: black;">${monthName}</td>
             <td>শেষ টাকা</td>
             <td></td>
             <td></td>
