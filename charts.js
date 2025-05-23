@@ -68,3 +68,62 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
+
+let summaryChart = null;
+
+function renderSummaryChart(labelText, income, expense) {
+  const ctx = document.getElementById("summaryChart").getContext("2d");
+
+  if (summaryChart) {
+    summaryChart.destroy();
+  }
+
+  const total = income - expense;
+
+  summaryChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["আয়", "ব্যয়"],
+      datasets: [{
+        data: [income, expense],
+        backgroundColor: ["#28a745", "#dc3545"],
+        borderColor: ["#fff", "#fff"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            font: {
+              size: 14
+            }
+          }
+        },
+        title: {
+          display: true,
+          text: `${labelText} | মোট: ${formatTaka(total)}`,
+          font: {
+            size: 18
+          }
+        }
+      }
+    }
+  });
+
+  // নিচে মোট টাকা আলাদা করে দেখাতে চাইলে (HTML ID লাগবে)
+  const totalDisplay = document.getElementById("totalAmountDisplay");
+  if (totalDisplay) {
+    totalDisplay.innerText = `মোট টাকা: ${formatTaka(total)}`;
+  }
+}
+
+// formatTaka যদি আলাদা ফাইলে না থাকে তবে এটাও এখানে রাখতে পারো
+function formatTaka(amount) {
+  return "৳" + Number(amount).toLocaleString("en-BD", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
