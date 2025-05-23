@@ -153,7 +153,7 @@ function calculateMonthlySummary(userId, month) {
         <tbody>
           <tr>
             <td>${monthName}</td>
-            <td>লাস্ট টাকা</td>
+            <td>শেষ টাকা</td>
             <td></td>
             <td></td>
             <td>${formatTaka(prevBalance)}</td>
@@ -242,7 +242,7 @@ function calculateDailySummary(userId, date) {
         <tbody>
           <tr>
             <td>${dateLabel}</td>
-            <td>লাস্ট টাকা</td>
+            <td>শেষ টাকা</td>
             <td></td>
             <td></td>
             <td>${formatTaka(prevBalance)}</td>
