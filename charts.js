@@ -73,52 +73,43 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-let summaryChartInstance = null;
-
 function renderSummaryChart(labelText, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
-  // পুরানো চার্ট থাকলে ধ্বংস করো
   if (summaryChartInstance) {
     summaryChartInstance.destroy();
   }
 
-  const total = income - expense;
+  const balance = income - expense;
 
   summaryChartInstance = new Chart(ctx, {
     type: "pie",
     data: {
-      labels: ["আয়", "ব্যয়"],
+      labels: ["আয়", "ব্যয়", "মোট টাকা"],
       datasets: [{
-        data: [income, expense],
-        backgroundColor: ["#28a745", "#dc3545"], // আয়: সবুজ, ব্যয়: লাল
-        borderColor: ["#ffffff", "#ffffff"],
-        borderWidth: 2
+        data: [income, expense, balance],
+        backgroundColor: ["#28a745", "#dc3545", "#007bff"],
+        borderColor: ["#fff", "#fff", "#fff"],
+        borderWidth: 1
       }]
     },
     options: {
       responsive: true,
       plugins: {
         legend: {
-          position: "top",
-          labels: {
-            font: {
-              size: 14
-            }
-          }
+          position: 'top',
+          labels: { font: { size: 14 } }
         },
         title: {
           display: true,
-          text: `${labelText} | মোট: ${formatTaka(total)}`,
-          font: {
-            size: 16
-          }
+          text: `${labelText} | ব্যালেন্স: ${formatTaka(balance)}`,
+          font: { size: 18 }
         },
         tooltip: {
           callbacks: {
-            label: function(context) {
-              const value = context.parsed;
-              const label = context.label;
+            label: function (context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
               return `${label}: ${formatTaka(value)}`;
             }
           }
@@ -129,6 +120,6 @@ function renderSummaryChart(labelText, income, expense) {
 
   const totalDisplay = document.getElementById("totalAmountDisplay");
   if (totalDisplay) {
-    totalDisplay.innerText = `মোট টাকা: ${formatTaka(total)}`;
+    totalDisplay.innerText = `মোট টাকা: ${formatTaka(balance)}`;
   }
 }
