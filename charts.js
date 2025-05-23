@@ -68,3 +68,54 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
+
+let monthlyChart;
+
+function updateMonthlyChart(month, income, expense, total) {
+  const monthLabel = new Date(`${month}-01`).toLocaleString("bn-BD", {
+    month: "short",
+    year: "numeric"
+  });
+
+  const data = {
+    labels: ["আয়", "ব্যয়", "টাকা"],
+    datasets: [
+      {
+        label: monthLabel,
+        data: [income, expense, total],
+        backgroundColor: ["#4caf50", "#f44336", "#2196f3"]
+      }
+    ]
+  };
+
+  const config = {
+    type: "bar",
+    data: data,
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return "৳" + value.toLocaleString("en-BD");
+            }
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  };
+
+  if (monthlyChart) {
+    monthlyChart.data = data;
+    monthlyChart.update();
+  } else {
+    const ctx = document.getElementById("monthlyChartCanvas").getContext("2d");
+    monthlyChart = new Chart(ctx, config);
+  }
+}
