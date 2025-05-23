@@ -257,7 +257,7 @@ body {
 
 /* Apex এবং Google চার্টের div */
 #categoryChart,
-#monthly3dChart {
+#summaryChart {
   width: 100%;
   height: 500px;
 }
@@ -265,7 +265,7 @@ body {
 /* মোবাইল রেসপনসিভ */
 @media (max-width: 600px) {
   #categoryChart,
-  #monthly3dChart {
+  #summaryChart{
     height: 400px;
   }
 
