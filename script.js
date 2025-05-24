@@ -140,33 +140,42 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
     }
   }
 
-  if (e.target.classList.contains("editBtn")) {
-    docRef.get().then(doc => {
-      const data = doc.data();
-      document.getElementById("date").value = data.date || "";
-      document.getElementById("type").value = data.type || "";
-      document.getElementById("type").dispatchEvent(new Event("change"));
-      document.getElementById("category").value = data.category || "";
-      document.getElementById("amount").value = data.amount || "";
+if (e.target.classList.contains("editBtn")) {
+  docRef.get().then(doc => {
+    const data = doc.data();
+    document.getElementById("date").value = data.date || "";
+    document.getElementById("type").value = data.type || "";
+    document.getElementById("type").dispatchEvent(new Event("change"));
+    document.getElementById("category").value = data.category || "";
+    document.getElementById("amount").value = data.amount || "";
 
-      document.getElementById("transactionForm").onsubmit = function (ev) {
-        ev.preventDefault();
-        const updatedData = {
-          date: document.getElementById("date").value,
-          type: document.getElementById("type").value,
-          category: document.getElementById("category").value,
-          amount: parseFloat(document.getElementById("amount").value),
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        docRef.update(updatedData).then(() => {
-          document.getElementById("transactionForm").reset();
-          document.getElementById("transactionForm").onsubmit = submitHandler;
-          loadTransactions(user.uid);
-        });
+    document.getElementById("transactionForm").onsubmit = function (ev) {
+      ev.preventDefault();
+
+      const updatedData = {
+        date: document.getElementById("date").value,
+        type: document.getElementById("type").value,
+        category: document.getElementById("category").value,
+        amount: parseFloat(document.getElementById("amount").value),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
       };
-    });
-  }
-});
+
+      // পুরাতন ডকুমেন্ট ডিলিট করে নতুন এন্ট্রি অ্যাড করুন
+      docRef.delete().then(() => {
+        firebase.firestore()
+          .collection("users")
+          .doc(user.uid)
+          .collection("transactions")
+          .add(updatedData)
+          .then(() => {
+            document.getElementById("transactionForm").reset();
+            document.getElementById("transactionForm").onsubmit = submitHandler;
+            loadTransactions(user.uid); // নতুন করে লোড করে টেবিল আপডেট
+          });
+      });
+    };
+  });
+}
 
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
