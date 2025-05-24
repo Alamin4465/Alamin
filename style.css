@@ -232,34 +232,22 @@ body {
   color: white;
 }
 
+#chartsRow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .chart-container {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
 
 
 
 
-/* চার্ট কন্টেইনার */
-.#chartsRow {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 30px;
-  flex-wrap: wrap;
-  margin-top: 30px;
-}
-
-.chart-container {
-  width: 100%;
-  max-width: 400px;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-#totalAmountDisplay {
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 30px;
-}
 
 /* মাস ও তারিখ ফিল্টার স্টাইল */
 .Filter-monthday {
