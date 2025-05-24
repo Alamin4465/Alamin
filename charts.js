@@ -1,4 +1,7 @@
+// chart.js
+
 let chartInstance;
+let summaryChart;
 
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
@@ -72,15 +75,13 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
-// Chart.js দিয়ে সারাংশ চার্ট তৈরি
-let summaryChart; // রেফারেন্স রাখার জন্য
 
 function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
   const total = income - expense;
 
   if (summaryChart) {
-    summaryChart.destroy(); // আগের চার্ট মুছে ফেলি
+    summaryChart.destroy();
   }
 
   summaryChart = new Chart(ctx, {
@@ -96,16 +97,11 @@ function renderSummaryChart(title, income, expense) {
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         title: {
           display: true,
           text: title,
-          font: {
-            size: 18,
-            weight: 'bold'
-          }
+          font: { size: 18, weight: 'bold' }
         }
       },
       scales: {
