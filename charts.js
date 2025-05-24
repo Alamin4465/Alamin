@@ -72,54 +72,52 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
+// Chart.js দিয়ে সারাংশ চার্ট তৈরি
+let summaryChart; // রেফারেন্স রাখার জন্য
 
-function renderSummaryChart(labelText, income, expense) {
+function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
+  const total = income - expense;
 
-  if (summaryChartInstance) {
-    summaryChartInstance.destroy();
+  if (summaryChart) {
+    summaryChart.destroy(); // আগের চার্ট মুছে ফেলি
   }
 
-  const balance = income - expense;
-
-  summaryChartInstance = new Chart(ctx, {
-    type: "pie",
+  summaryChart = new Chart(ctx, {
+    type: 'bar',
     data: {
-      labels: ["আয়", "ব্যয়", "মোট টাকা"],
+      labels: ['আয়', 'ব্যয়', 'মোট'],
       datasets: [{
-        data: [income, expense, balance],
-        backgroundColor: ["#28a745", "#dc3545", "#007bff"],
-        borderColor: ["#fff", "#fff", "#fff"],
-        borderWidth: 1
+        label: title,
+        data: [income, expense, total],
+        backgroundColor: ['#4caf50', '#f44336', '#2196f3']
       }]
     },
     options: {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
-          labels: { font: { size: 14 } }
+          display: false
         },
         title: {
           display: true,
-          text: `${labelText} | ব্যালেন্স: ${formatTaka(balance)}`,
-          font: { size: 18 }
-        },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              const label = context.label || '';
-              const value = context.raw || 0;
-              return `${label}: ${formatTaka(value)}`;
+          text: title,
+          font: {
+            size: 18,
+            weight: 'bold'
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '৳' + value.toLocaleString("en-BD");
             }
           }
         }
       }
     }
   });
-
-  const totalDisplay = document.getElementById("totalAmountDisplay");
-  if (totalDisplay) {
-    totalDisplay.innerText = `মোট টাকা: ${formatTaka(balance)}`;
-  }
 }
