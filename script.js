@@ -1,8 +1,7 @@
-let currentFilter = null;
+let currentFilter = "all";
 let allTransactions = [];
 let chart;
 
-// অটোমেটিক ইউজার চেক
 firebase.auth().onAuthStateChanged(user => {
   if (!user) {
     window.location.href = "login.html";
@@ -10,11 +9,10 @@ firebase.auth().onAuthStateChanged(user => {
     document.querySelector(".container").style.display = "block";
     loadFullSummary(user.uid);
     loadUserInfo(user);
-    loadTransactions(user.uid); // পেজ লোডের সময় লোড করা
+    loadTransactions(user.uid);
   }
 });
 
-// বাংলা নাম্বার
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
   let fixed = parseInt(num) || 0;
@@ -29,12 +27,10 @@ function toBanglaPercentage(num) {
   }).join('') + " %";
 }
 
-// ইউজার ইনফো
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
 }
 
-// পূর্ণ সারাংশ লোড
 function loadFullSummary(userId) {
   const db = firebase.firestore();
   db.collection("users").doc(userId).collection("transactions").onSnapshot(snapshot => {
@@ -59,14 +55,9 @@ function loadFullSummary(userId) {
   });
 }
 
-// ট্রানজেকশন লোড
 function loadTransactions(userId) {
-  if (!currentFilter) return;
-
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
-  tbody.innerHTML = "";
-
   db.collection("users")
     .doc(userId)
     .collection("transactions")
@@ -82,7 +73,7 @@ function loadTransactions(userId) {
 
         if (currentFilter !== "all" && type !== currentFilter) return;
 
-        allTransactions.push(data);
+        allTransactions.push({ ...data, id: doc.id });
 
         const row = document.createElement("tr");
         row.className = type === "income" ? "income-row" : "expense-row";
@@ -106,7 +97,6 @@ function loadTransactions(userId) {
     });
 }
 
-// ফর্ম সাবমিট
 function submitHandler(e) {
   e.preventDefault();
   const user = firebase.auth().currentUser;
@@ -133,10 +123,8 @@ function submitHandler(e) {
     });
 }
 
-// সাবমিট হ্যান্ডলার যুক্ত করা
 document.getElementById("transactionForm").addEventListener("submit", submitHandler);
 
-// টেবিলের বাটন এডিট/ডিলিট
 document.querySelector("#transactionTable tbody").addEventListener("click", e => {
   const user = firebase.auth().currentUser;
   const docId = e.target.getAttribute("data-id");
@@ -157,6 +145,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
       document.getElementById("category").value = data.category || "";
       document.getElementById("amount").value = data.amount || "";
 
+      // Edit মোডে ফর্ম সাবমিট হ্যান্ডলার আপডেট করা
       document.getElementById("transactionForm").onsubmit = function (ev) {
         ev.preventDefault();
 
@@ -170,16 +159,14 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
 
         docRef.update(updatedData).then(() => {
           document.getElementById("transactionForm").reset();
+          document.getElementById("transactionForm").onsubmit = null;
           document.getElementById("transactionForm").onsubmit = submitHandler;
-          // নিচের লাইনটি শুধু অতিরিক্ত সুরক্ষায় দেয়া হলো
-          loadTransactions(user.uid);
         });
       };
     });
   }
 });
 
-// টাইপ অনুযায়ী ক্যাটেগরি
 const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
 const expenseCategories = [
   "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
@@ -201,7 +188,6 @@ document.getElementById("type").addEventListener("change", function () {
   });
 });
 
-// ফিল্টার বাটন
 document.querySelectorAll(".filterBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".filterBtn").forEach(b => b.classList.remove("active"));
@@ -215,7 +201,6 @@ document.querySelectorAll(".filterBtn").forEach(btn => {
   });
 });
 
-// লগআউট
 document.getElementById("logoutBtn").addEventListener("click", () => {
   firebase.auth().signOut().then(() => {
     window.location.href = "login.html";
