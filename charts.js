@@ -1,7 +1,10 @@
 // chart.js
 
-let chartInstance;
 let summaryChart;
+
+// chart.js
+
+let chartInstance;
 
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
