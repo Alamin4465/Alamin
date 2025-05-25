@@ -1,8 +1,7 @@
 let currentFilter = "all";
 let allTransactions = [];
- // এটা এখানে দরকার নেই, চার্ট আলাদা ফাইলে থাকবে
 
-// বাংলা নাম্বার ফাংশন
+// বাংলা নাম্বার ফাংশন (৳ টাকার জন্য সঠিক ফরম্যাট)
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
   let fixed = parseInt(num) || 0;
@@ -29,7 +28,7 @@ firebase.auth().onAuthStateChanged(user => {
   }
 });
 
-// ইউজার ইনফো
+// ইউজার ইনফো দেখানো
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
 }
@@ -59,11 +58,10 @@ function loadFullSummary(userId) {
   });
 }
 
-// ট্রানজেকশন লোড
+// ট্রানজেকশন লোড ও টেবিল রেন্ডার
 function loadTransactions(userId) {
   const db = firebase.firestore();
   const tbody = document.querySelector("#transactionTable tbody");
-  tbody.innerHTML = "";
 
   db.collection("users")
     .doc(userId)
@@ -114,7 +112,8 @@ function submitHandler(e) {
   const date = document.getElementById("date").value;
   const type = document.getElementById("type").value;
   const category = document.getElementById("category").value;
-  const amount = parseFloat(document.getElementById("amount").value);
+  const amountStr = document.getElementById("amount").value;
+  const amount = parseFloat(amountStr.replace(/[^\d.-]/g, ''));
 
   if (!date || !type || !category || isNaN(amount)) {
     alert("সকল ফিল্ড সঠিকভাবে পূরণ করুন");
@@ -168,11 +167,14 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
       document.getElementById("transactionForm").onsubmit = function(ev) {
         ev.preventDefault();
 
+        const updatedAmountStr = document.getElementById("amount").value;
+        const updatedAmount = parseFloat(updatedAmountStr.replace(/[^\d.-]/g, ''));
+
         const updatedData = {
           date: document.getElementById("date").value,
           type: document.getElementById("type").value,
           category: document.getElementById("category").value,
-          amount: parseFloat(document.getElementById("amount").value),
+          amount: updatedAmount,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
 
