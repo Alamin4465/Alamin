@@ -54,8 +54,7 @@ function renderChart(transactions, filterType = "all") {
     legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
-      formatter: function (val, opts) {
-        // শুধু % দেখাবে এখানে
+      formatter: function (val) {
         return toBanglaNumber(val.toFixed(1)) + '%';
       },
       style: { fontSize: '14px', fontWeight: 'bold' }
@@ -64,7 +63,7 @@ function renderChart(transactions, filterType = "all") {
       enabled: true,
       y: {
         formatter: function(val) {
-          return toBanglaNumber(val.toFixed(2)) + ' টাকা';
+          return toBanglaNumber(val.toFixed(2)); // টাকা সাইন বাদ
         }
       }
     },
@@ -94,7 +93,6 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
-
 function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
   const total = income - expense;
