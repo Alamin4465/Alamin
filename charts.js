@@ -37,7 +37,6 @@ function renderChart(transactions, filterType = "all") {
     ...expenseCategories.map(c => "ব্যয়: " + c)
   ];
 
-  // রঙ আলাদা করে অটো match করানো
   const incomeColors = Array(incomeValues.length).fill().map((_, i) => `hsl(140, 70%, ${60 - i * 5}%)`);
   const expenseColors = Array(expenseValues.length).fill().map((_, i) => `hsl(0, 70%, ${65 - i * 5}%)`);
   const colors = [...incomeColors, ...expenseColors];
@@ -55,14 +54,16 @@ function renderChart(transactions, filterType = "all") {
     legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
-      formatter: function (val) {
+      formatter: function (val, opts) {
+        // শুধু % দেখাবে এখানে
         return toBanglaNumber(val.toFixed(1)) + '%';
       },
       style: { fontSize: '14px', fontWeight: 'bold' }
     },
     tooltip: {
+      enabled: true,
       y: {
-        formatter: function (val) {
+        formatter: function(val) {
           return toBanglaNumber(val.toFixed(2)) + ' টাকা';
         }
       }
@@ -93,6 +94,7 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
+
 function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
   const total = income - expense;
