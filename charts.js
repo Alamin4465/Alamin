@@ -21,22 +21,27 @@ function renderChart(transactions, filterType = "all") {
     const amount = parseFloat(txn.amount) || 0;
 
     if (type === "income") {
-      if (!incomeCategoryMap[category]) incomeCategoryMap[category] = 0;
-      incomeCategoryMap[category] += amount;
-    } else if (type === "expense") {
-      if (!expenseCategoryMap[category]) expenseCategoryMap[category] = 0;
-      expenseCategoryMap[category] += amount;
+      incomeCategoryMap[category] = (incomeCategoryMap[category] || 0) + amount;
+    } else {
+      expenseCategoryMap[category] = (expenseCategoryMap[category] || 0) + amount;
     }
   });
 
   const incomeCategories = Object.keys(incomeCategoryMap);
   const incomeValues = Object.values(incomeCategoryMap);
-
   const expenseCategories = Object.keys(expenseCategoryMap);
   const expenseValues = Object.values(expenseCategoryMap);
 
   const series = [...incomeValues, ...expenseValues];
-  const labels = [...incomeCategories.map(c => "আয়: " + c), ...expenseCategories.map(c => "ব্যয়: " + c)];
+  const labels = [
+    ...incomeCategories.map(c => "আয়: " + c),
+    ...expenseCategories.map(c => "ব্যয়: " + c)
+  ];
+
+  // রঙ আলাদা করে অটো match করানো
+  const incomeColors = Array(incomeValues.length).fill().map((_, i) => `hsl(140, 70%, ${60 - i * 5}%)`);
+  const expenseColors = Array(expenseValues.length).fill().map((_, i) => `hsl(0, 70%, ${65 - i * 5}%)`);
+  const colors = [...incomeColors, ...expenseColors];
 
   const options = {
     chart: {
@@ -47,10 +52,7 @@ function renderChart(transactions, filterType = "all") {
     },
     series: series,
     labels: labels,
-    colors: [
-      '#4CAF50', '#66BB6A', '#81C784', // সবুজ রং আয় এর জন্য
-      '#F44336', '#EF5350', '#E57373'  // লাল রং ব্যয় এর জন্য
-    ],
+    colors: colors,
     legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
@@ -61,12 +63,12 @@ function renderChart(transactions, filterType = "all") {
     },
     tooltip: {
       y: {
-        formatter: function(val) {
+        formatter: function (val) {
           return toBanglaNumber(val.toFixed(2)) + ' টাকা';
         }
       }
     },
-    fill: { type: 'gradient' },
+    fill: { type: 'solid' },
     plotOptions: {
       pie: {
         expandOnClick: true,
