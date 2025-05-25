@@ -12,20 +12,37 @@ function toBanglaNumber(num) {
 }
 
 function renderChart(transactions, filterType = "all") {
-  const categoryMap = {};
+  // আয় এবং ব্যয়ের জন্য আলাদা categoryMap
+  const incomeCategoryMap = {};
+  const expenseCategoryMap = {};
 
   transactions.forEach(txn => {
-    if (filterType !== "all" && txn.type !== filterType) return;
+    const type = txn.type || "expense"; // ডিফল্ট ব্যয় ধরে নিচ্ছি
+    if (filterType !== "all" && type !== filterType) return;
+
     const category = txn.category || "অন্যান্য";
     const amount = parseFloat(txn.amount) || 0;
-    if (!categoryMap[category]) {
-      categoryMap[category] = 0;
+
+    if (type === "income") {
+      if (!incomeCategoryMap[category]) incomeCategoryMap[category] = 0;
+      incomeCategoryMap[category] += amount;
+    } else if (type === "expense") {
+      if (!expenseCategoryMap[category]) expenseCategoryMap[category] = 0;
+      expenseCategoryMap[category] += amount;
     }
-    categoryMap[category] += amount;
   });
 
-  const categories = Object.keys(categoryMap);
-  const values = Object.values(categoryMap);
+  // আয় ক্যাটেগরি লেবেল ও মান
+  const incomeCategories = Object.keys(incomeCategoryMap);
+  const incomeValues = Object.values(incomeCategoryMap);
+
+  // ব্যয় ক্যাটেগরি লেবেল ও মান
+  const expenseCategories = Object.keys(expenseCategoryMap);
+  const expenseValues = Object.values(expenseCategoryMap);
+
+  // সিরিজ ও লেবেল একত্রে
+  const series = [...incomeValues, ...expenseValues];
+  const labels = [...incomeCategories.map(c => "আয়: " + c), ...expenseCategories.map(c => "ব্যয়: " + c)];
 
   const options = {
     chart: {
@@ -34,9 +51,12 @@ function renderChart(transactions, filterType = "all") {
       width: '100%',
       toolbar: { show: false }
     },
-    series: values,
-    labels: categories,
-    colors: ['#4CAF50', '#F44336', '#FF9800', '#2196F3', '#9C27B0', '#3F51B5', '#009688'],
+    series: series,
+    labels: labels,
+    colors: [
+      '#4CAF50', '#66BB6A', '#81C784', // আয় জন্য সবুজ শেড
+      '#F44336', '#EF5350', '#E57373'  // ব্যয় জন্য লাল শেড
+    ],
     legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
@@ -72,7 +92,7 @@ function renderChart(transactions, filterType = "all") {
 
   if (chartInstance) {
     chartInstance.updateOptions(options);
-    chartInstance.updateSeries(values);
+    chartInstance.updateSeries(series);
   } else {
     chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
     chartInstance.render();
