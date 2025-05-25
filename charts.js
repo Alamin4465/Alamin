@@ -20,17 +20,14 @@ function renderChart(transactions, filterType = "all") {
     const amount = parseFloat(txn.amount) || 0;
 
     if (type === "income") {
-      if (!incomeCategoryMap[category]) incomeCategoryMap[category] = 0;
-      incomeCategoryMap[category] += amount;
-    } else if (type === "expense") {
-      if (!expenseCategoryMap[category]) expenseCategoryMap[category] = 0;
-      expenseCategoryMap[category] += amount;
+      incomeCategoryMap[category] = (incomeCategoryMap[category] || 0) + amount;
+    } else {
+      expenseCategoryMap[category] = (expenseCategoryMap[category] || 0) + amount;
     }
   });
 
   const incomeCategories = Object.keys(incomeCategoryMap);
   const incomeValues = Object.values(incomeCategoryMap);
-
   const expenseCategories = Object.keys(expenseCategoryMap);
   const expenseValues = Object.values(expenseCategoryMap);
 
@@ -40,9 +37,12 @@ function renderChart(transactions, filterType = "all") {
     ...expenseCategories.map(c => "ব্যয়: " + c)
   ];
 
-  const incomeColors = ['#4CAF50', '#66BB6A', '#81C784'];
-  const expenseColors = ['#F44336', '#EF5350', '#E57373'];
-  const colors = [...incomeColors.slice(0, incomeValues.length), ...expenseColors.slice(0, expenseValues.length)];
+  const incomeColors = ['#4CAF50', '#66BB6A', '#81C784', '#388E3C'];
+  const expenseColors = ['#F44336', '#EF5350', '#E57373', '#C62828'];
+  const colors = [
+    ...incomeColors.slice(0, incomeValues.length),
+    ...expenseColors.slice(0, expenseValues.length)
+  ];
 
   const options = {
     chart: {
@@ -64,12 +64,12 @@ function renderChart(transactions, filterType = "all") {
     },
     tooltip: {
       y: {
-        formatter: function(val) {
+        formatter: function (val) {
           return toBanglaNumber(val.toFixed(2)) + ' টাকা';
         }
       }
     },
-    fill: { type: 'gradient' },
+    fill: { type: 'solid' },
     plotOptions: {
       pie: {
         expandOnClick: true,
