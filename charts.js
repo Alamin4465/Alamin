@@ -37,12 +37,10 @@ function renderChart(transactions, filterType = "all") {
     ...expenseCategories.map(c => "ব্যয়: " + c)
   ];
 
-  const incomeColors = ['#4CAF50', '#66BB6A', '#81C784', '#388E3C'];
-  const expenseColors = ['#F44336', '#EF5350', '#E57373', '#C62828'];
-  const colors = [
-    ...incomeColors.slice(0, incomeValues.length),
-    ...expenseColors.slice(0, expenseValues.length)
-  ];
+  // রঙ আলাদা করে অটো match করানো
+  const incomeColors = Array(incomeValues.length).fill().map((_, i) => `hsl(140, 70%, ${60 - i * 5}%)`);
+  const expenseColors = Array(expenseValues.length).fill().map((_, i) => `hsl(0, 70%, ${65 - i * 5}%)`);
+  const colors = [...incomeColors, ...expenseColors];
 
   const options = {
     chart: {
