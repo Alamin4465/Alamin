@@ -1,6 +1,7 @@
 // chart.js
 
-let summaryChart;let chartInstance;
+let summaryChart;
+let chartInstance;
 
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
@@ -34,29 +35,14 @@ function renderChart(transactions, filterType = "all") {
   const expenseValues = Object.values(expenseCategoryMap);
 
   const series = [...incomeValues, ...expenseValues];
-  const labels = [...incomeCategories.map(c => "আয়: " + c), ...expenseCategories.map(c => "ব্যয়: " + c)];
-
-  // আয় এর জন্য সবুজের বিভিন্ন শেড, প্রয়োজন অনুসারে বাড়িয়ে নিতে পারো
-  const incomeColors = [
-    '#4CAF50', '#66BB6A', '#81C784', '#A5D6A7', '#C8E6C9', '#E8F5E9'
+  const labels = [
+    ...incomeCategories.map(c => "আয়: " + c),
+    ...expenseCategories.map(c => "ব্যয়: " + c)
   ];
 
-  // ব্যয়ের জন্য লালের বিভিন্ন শেড
-  const expenseColors = [
-    '#F44336', '#EF5350', '#E57373', '#EF9A9A', '#FFCDD2', '#FFEBEE'
-  ];
-
-  // রঙ এর সংখ্যা আয় ও ব্যয়ের ক্যাটেগরির সংখ্যার সাথে মেলে দিতে হবে
-  // যদি ক্যাটেগরি বেশি হয়, তাহলে রঙগুলো পুনরাবৃত্তি করবে
-  function generateColors(baseColors, count) {
-    const colors = [];
-    for (let i = 0; i < count; i++) {
-      colors.push(baseColors[i % baseColors.length]);
-    }
-    return colors;
-  }
-
-  const colors = [...generateColors(incomeColors, incomeCategories.length), ...generateColors(expenseColors, expenseCategories.length)];
+  const incomeColors = ['#4CAF50', '#66BB6A', '#81C784'];
+  const expenseColors = ['#F44336', '#EF5350', '#E57373'];
+  const colors = [...incomeColors.slice(0, incomeValues.length), ...expenseColors.slice(0, expenseValues.length)];
 
   const options = {
     chart: {
