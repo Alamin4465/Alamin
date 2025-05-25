@@ -1,10 +1,6 @@
 // chart.js
 
-let summaryChart;
-
-// chart.js
-
-let chartInstance;
+let summaryChart;let chartInstance;
 
 function toBanglaNumber(num) {
   const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
@@ -12,12 +8,11 @@ function toBanglaNumber(num) {
 }
 
 function renderChart(transactions, filterType = "all") {
-  // আয় এবং ব্যয়ের জন্য আলাদা categoryMap
   const incomeCategoryMap = {};
   const expenseCategoryMap = {};
 
   transactions.forEach(txn => {
-    const type = txn.type || "expense"; // ডিফল্ট ব্যয় ধরে নিচ্ছি
+    const type = txn.type || "expense";
     if (filterType !== "all" && type !== filterType) return;
 
     const category = txn.category || "অন্যান্য";
@@ -32,15 +27,12 @@ function renderChart(transactions, filterType = "all") {
     }
   });
 
-  // আয় ক্যাটেগরি লেবেল ও মান
   const incomeCategories = Object.keys(incomeCategoryMap);
   const incomeValues = Object.values(incomeCategoryMap);
 
-  // ব্যয় ক্যাটেগরি লেবেল ও মান
   const expenseCategories = Object.keys(expenseCategoryMap);
   const expenseValues = Object.values(expenseCategoryMap);
 
-  // সিরিজ ও লেবেল একত্রে
   const series = [...incomeValues, ...expenseValues];
   const labels = [...incomeCategories.map(c => "আয়: " + c), ...expenseCategories.map(c => "ব্যয়: " + c)];
 
@@ -54,8 +46,8 @@ function renderChart(transactions, filterType = "all") {
     series: series,
     labels: labels,
     colors: [
-      '#4CAF50', '#66BB6A', '#81C784', // আয় জন্য সবুজ শেড
-      '#F44336', '#EF5350', '#E57373'  // ব্যয় জন্য লাল শেড
+      '#4CAF50', '#66BB6A', '#81C784', // আয় সবুজ শেডস
+      '#F44336', '#EF5350', '#E57373'  // ব্যয় লাল শেডস
     ],
     legend: { position: 'bottom' },
     dataLabels: {
