@@ -55,15 +55,14 @@ function renderChart(transactions, filterType = "all") {
     dataLabels: {
       enabled: true,
       formatter: function (val) {
-        return toBanglaNumber(val.toFixed(1)) + '%';
+        return toBanglaNumber(val.toFixed(1)) + '%'; // এটা শুধুই %
       },
       style: { fontSize: '14px', fontWeight: 'bold' }
     },
     tooltip: {
-      enabled: true,
       y: {
-        formatter: function(val) {
-          return toBanglaNumber(val.toFixed(2)); // টাকা সাইন বাদ
+        formatter: function(val, opts) {
+          return toBanglaNumber(val.toFixed(2)); // শুধু সংখ্যা, ৳ বাদ
         }
       }
     },
