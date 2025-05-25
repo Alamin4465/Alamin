@@ -10,6 +10,7 @@ firebase.auth().onAuthStateChanged(user => {
     document.querySelector(".container").style.display = "block";
     loadFullSummary(user.uid);
     loadUserInfo(user);
+    loadTransactions(user.uid); // পেজ লোডের সময় লোড করা
   }
 });
 
@@ -129,7 +130,6 @@ function submitHandler(e) {
     })
     .then(() => {
       document.getElementById("transactionForm").reset();
-      loadTransactions(user.uid);
     });
 }
 
@@ -144,7 +144,7 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
 
   if (e.target.classList.contains("deleteBtn")) {
     if (confirm("আপনি কি ডিলিট করতে চান?")) {
-      docRef.delete().then(() => loadTransactions(user.uid));
+      docRef.delete();
     }
   }
 
@@ -168,17 +168,11 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        docRef.delete().then(() => {
-          firebase.firestore()
-            .collection("users")
-            .doc(user.uid)
-            .collection("transactions")
-            .add(updatedData)
-            .then(() => {
-              document.getElementById("transactionForm").reset();
-              document.getElementById("transactionForm").onsubmit = submitHandler;
-              loadTransactions(user.uid);
-            });
+        docRef.update(updatedData).then(() => {
+          document.getElementById("transactionForm").reset();
+          document.getElementById("transactionForm").onsubmit = submitHandler;
+          // নিচের লাইনটি শুধু অতিরিক্ত সুরক্ষায় দেয়া হলো
+          loadTransactions(user.uid);
         });
       };
     });
