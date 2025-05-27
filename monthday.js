@@ -57,8 +57,11 @@ function filterByDate(userId, date) {
 // দৈনিক সামারি ক্যালকুলেশন
 function calculateDailySummary(userId, date) {
   const selectedDate = new Date(date);
-  const prevDate = new Date(selectedDate);
-  prevDate.setDate(prevDate.getDate() - 1);
+  selectedDate.setHours(0, 0, 0, 0); // আজকের শুরু সময়
+
+  const nextDay = new Date(selectedDate);
+  nextDay.setDate(nextDay.getDate() + 1); // পরের দিন = আজকের শেষ পর্যন্ত
+  nextDay.setHours(0, 0, 0, 0);
 
   let income = 0;
   let expense = 0;
@@ -67,19 +70,9 @@ function calculateDailySummary(userId, date) {
   const db = firebase.firestore();
   const transactionRef = db.collection("users").doc(userId).collection("transactions");
 
-  const prevStart = new Date(prevDate);
-  prevStart.setHours(0, 0, 0, 0);
-  const prevEnd = new Date(prevDate);
-  prevEnd.setHours(23, 59, 59, 999);
-
-  const currentStart = new Date(selectedDate);
-  currentStart.setHours(0, 0, 0, 0);
-  const currentEnd = new Date(selectedDate);
-  currentEnd.setHours(23, 59, 59, 999);
-
+  // সব আগের ট্রান্সাকশন ধরো (আজকের 00:00 এর আগে)
   transactionRef
-    .where("timestamp", ">=", prevStart)
-    .where("timestamp", "<=", prevEnd)
+    .where("timestamp", "<", selectedDate)
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
@@ -88,9 +81,10 @@ function calculateDailySummary(userId, date) {
         else if (data.type === "expense") prevBalance -= data.amount || 0;
       });
 
+      // আজকের ট্রান্সাকশন
       return transactionRef
-        .where("timestamp", ">=", currentStart)
-        .where("timestamp", "<=", currentEnd)
+        .where("timestamp", ">=", selectedDate)
+        .where("timestamp", "<", nextDay)
         .get();
     })
     .then(snapshot => {
@@ -102,9 +96,7 @@ function calculateDailySummary(userId, date) {
 
       const total = prevBalance + income - expense;
       const dateLabel = new Date(date).toLocaleDateString("bn-BD", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
+        year: "numeric", month: "short", day: "numeric"
       });
 
       const summaryTable = document.getElementById("monthlySummary");
@@ -128,13 +120,13 @@ function calculateDailySummary(userId, date) {
             <td>আজকের আয়</td>
             <td>${formatTaka(income)}</td>
             <td></td>
-            <td></td>
+            <td>+${formatTaka(income)}</td>
           </tr>
           <tr>
             <td>আজকের ব্যয়</td>
             <td></td>
             <td>${formatTaka(expense)}</td>
-            <td>${formatTaka(prevBalance + income - expense)}</td>
+            <td>-${formatTaka(expense)}</td>
           </tr>
           <tr>
             <td colspan="3">মোট</td>
