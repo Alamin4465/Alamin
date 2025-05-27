@@ -67,9 +67,19 @@ function calculateDailySummary(userId, date) {
   const db = firebase.firestore();
   const transactionRef = db.collection("users").doc(userId).collection("transactions");
 
+  const prevStart = new Date(prevDate);
+  prevStart.setHours(0, 0, 0, 0);
+  const prevEnd = new Date(prevDate);
+  prevEnd.setHours(23, 59, 59, 999);
+
+  const currentStart = new Date(selectedDate);
+  currentStart.setHours(0, 0, 0, 0);
+  const currentEnd = new Date(selectedDate);
+  currentEnd.setHours(23, 59, 59, 999);
+
   transactionRef
-    .where("timestamp", ">=", new Date(prevDate.setHours(0, 0, 0, 0)))
-    .where("timestamp", "<", new Date(prevDate.setHours(23, 59, 59, 999)))
+    .where("timestamp", ">=", prevStart)
+    .where("timestamp", "<=", prevEnd)
     .get()
     .then(snapshot => {
       snapshot.forEach(doc => {
@@ -79,8 +89,8 @@ function calculateDailySummary(userId, date) {
       });
 
       return transactionRef
-        .where("timestamp", ">=", new Date(selectedDate.setHours(0, 0, 0, 0)))
-        .where("timestamp", "<", new Date(selectedDate.setHours(23, 59, 59, 999)))
+        .where("timestamp", ">=", currentStart)
+        .where("timestamp", "<=", currentEnd)
         .get();
     })
     .then(snapshot => {
@@ -89,12 +99,14 @@ function calculateDailySummary(userId, date) {
         if (data.type === "income") income += data.amount || 0;
         else if (data.type === "expense") expense += data.amount || 0;
       });
+
       const total = prevBalance + income - expense;
       const dateLabel = new Date(date).toLocaleDateString("bn-BD", {
         year: "numeric",
         month: "short",
         day: "numeric"
       });
+
       const summaryTable = document.getElementById("monthlySummary");
       summaryTable.innerHTML = `
         <thead>
@@ -130,10 +142,12 @@ function calculateDailySummary(userId, date) {
           </tr>
         </tbody>
       `;
+
       summaryTable.style.display = "table";
       renderSummaryChart(`${dateLabel} - আয় বনাম ব্যয়`, income, expense);
     });
 }
+
 
 // মাস ফিল্টার ইভেন্ট লিসেনার
 document.getElementById("monthFilter").addEventListener("change", () => {
