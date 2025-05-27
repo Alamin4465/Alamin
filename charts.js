@@ -79,6 +79,8 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
+// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
+Chart.register(ChartDataLabels);
 
 
 function renderSummaryChart(titlePrefix, income, expense) {
@@ -89,14 +91,14 @@ function renderSummaryChart(titlePrefix, income, expense) {
   }
 
   const total = income - expense;
-  
+
   summaryChart = new Chart(ctx, {
     type: "pie",
     data: {
       labels: ["আয়", "ব্যয়", "মোট"],
       datasets: [{
         data: [income, expense, Math.abs(total)],
-        backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"], // সবুজ, লাল, হলুদ
+        backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"],
         borderColor: "#fff",
         borderWidth: 1
       }]
@@ -104,30 +106,48 @@ function renderSummaryChart(titlePrefix, income, expense) {
     options: {
       responsive: true,
       plugins: {
-        legend: {
-          labels: {
-            font: {
-              size: 14
-            }
-          }
-        },
+        // Tooltip: টাকা বড় ফন্টে
         tooltip: {
           callbacks: {
             label: function(context) {
               const label = context.label || '';
               const value = context.raw || 0;
               return `${label}: ${formatTaka(value)}`;
-            }
+            },
+            labelTextColor: () => '#000',
+            titleFont: { size: 14 },
+            bodyFont: { size: 18 } // বড় ফন্টে টাকা
           }
         },
+        // Title
         title: {
           display: true,
           text: `${titlePrefix}`,
+          font: { size: 18 }
+        },
+        // Percent display inside slices
+        datalabels: {
+          color: "#000",
           font: {
-            size: 18
+            weight: 'bold',
+            size: 14
+          },
+          formatter: (value, context) => {
+            const data = context.chart.data.datasets[0].data;
+            const sum = data.reduce((a, b) => a + b, 0);
+            const percentage = ((value / sum) * 100).toFixed(1);
+            return `${percentage}%`;
+          }
+        },
+        legend: {
+          labels: {
+            font: { size: 14 }
           }
         }
       }
-    }
+    },
+    plugins: [ChartDataLabels]
   });
 }
+
+
