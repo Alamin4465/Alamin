@@ -14,7 +14,19 @@ firebase.auth().onAuthStateChanged(user => {
 
 // বাংলা নাম্বার
 
+function toBanglaNumber(num) {
+  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  let fixed = parseInt(num) || 0;
+  return fixed.toString().split('').map(d => banglaDigits[d] || d).join('') + "৳";
+}
 
+function toBanglaPercentage(num) {
+  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  return parseFloat(num).toFixed(2).split('').map(d => {
+    if (d === '.') return '.';
+    return banglaDigits[d] || d;
+  }).join('') + " %";
+}
 // ইউজার ইনফো
 function loadUserInfo(user) {
   document.getElementById("user-info").textContent = `স্বাগতম, ${user.email}`;
