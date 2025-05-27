@@ -4,11 +4,6 @@ let summaryChart;
 // chart.js
 let chartInstance;
 
-function toBanglaNumber(num) {
-  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-  return num.toString().split('').map(d => banglaDigits[d] || d).join('');
-}
-
 function renderChart(transactions, filterType = "all") {
   const incomeCategoryMap = {};
   const expenseCategoryMap = {};
