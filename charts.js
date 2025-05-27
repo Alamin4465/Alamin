@@ -51,17 +51,6 @@ function renderChart(transactions, filterType = "all") {
     legend: { position: 'bottom' },
     dataLabels: {
       enabled: true,
-      formatter: function (val) {
-        return toBanglaNumber(val.toFixed(1)) + '%';
-      },
-      style: { fontSize: '14px', fontWeight: 'bold' }
-    },
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return toBanglaNumber(val.toFixed(2)) + ' টাকা';
-        }
-      }
     },
     fill: { type: 'solid' },
     plotOptions: {
