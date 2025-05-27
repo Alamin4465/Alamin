@@ -80,12 +80,9 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-
-
-
 function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
-  if (window.summaryChart) window.summaryChart.destroy(); // আগের চার্ট মুছে ফেলা
+  if (window.summaryChart) window.summaryChart.destroy();
 
   Chart.register(ChartDataLabels);
 
@@ -95,7 +92,7 @@ function renderSummaryChart(title, income, expense) {
       labels: ["আয়", "ব্যয়", "মোট"],
       datasets: [{
         data: [income, expense, income + expense],
-        backgroundColor: ["#4CAF50", "#F44336", "#FFD700"],
+        backgroundColor: ["#4CAF50", "#F44336", "#FFD700"], // হলুদ = মোট
         borderWidth: 1
       }]
     },
@@ -104,7 +101,7 @@ function renderSummaryChart(title, income, expense) {
         title: {
           display: true,
           text: title,
-          font: { size: 16 },
+          font: { size: 16 }
         },
         datalabels: {
           color: 'blue',
@@ -117,18 +114,25 @@ function renderSummaryChart(title, income, expense) {
             const total = dataset.reduce((a, b) => a + b, 0);
             const percentage = (value / total) * 100;
             return percentage.toFixed(1) + "%";
-          }
+          },
+          display: (ctx) => ctx.dataIndex !== 2  // শুধু আয়/ব্যয়-এ % দেখাও, মোট-এ না চাইলে
         },
         tooltip: {
+          backgroundColor: 'transparent',
+          titleColor: 'blue',
+          bodyColor: 'blue',
+          borderColor: 'blue',
+          borderWidth: 0,
+          displayColors: false,
+          bodyFont: {
+            size: 18
+          },
           callbacks: {
             label: function(context) {
               const value = context.parsed;
               const label = context.label;
               return `${label}: ${formatTaka(value)}`;
             }
-          },
-          bodyFont: {
-            size: 18 // ক্লিক করলে টাকার ফন্ট বড় দেখাবে
           }
         }
       }
