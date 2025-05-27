@@ -1,5 +1,6 @@
 // chart.js
-
+// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
+Chart.register(ChartDataLabels);
 let summaryChart;
 // chart.js
 let chartInstance;
@@ -79,8 +80,7 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
-Chart.register(ChartDataLabels);
+
 
 
 function renderSummaryChart(titlePrefix, income, expense) {
