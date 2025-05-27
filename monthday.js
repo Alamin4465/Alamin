@@ -6,7 +6,7 @@ document.getElementById("resetFilterBtn").addEventListener("click", () => {
   document.getElementById("monthlySummary").style.display = "none";
 });
 
-// তারিখ অনুযায়ী টেবিল ফিল্টার (মোট টাকা সহ)
+// // তারিখ অনুযায়ী টেবিল ফিল্টার (মোট টাকা সহ)
 function filterByDate(userId, date) {
   const db = firebase.firestore();
   const tbody = document.querySelector("#filteredTable tbody");
@@ -29,29 +29,26 @@ function filterByDate(userId, date) {
         totalIncome += income;
         totalExpense += expense;
 
-        const incomeFormatted = data.type === "income" ? formatTaka(income) : "";
-        const expenseFormatted = data.type === "expense" ? formatTaka(expense) : "";
-
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${data.date || ""}</td>
           <td>${data.category || ""}</td>
-          <td>${incomeFormatted}</td>
-          <td>${expenseFormatted}</td>
+          <td>${data.type === "income" ? formatTaka(income) : ""}</td>
+          <td>${data.type === "expense" ? formatTaka(expense) : ""}</td>
         `;
         tbody.appendChild(tr);
       });
 
-      // মোট সারি যোগ করা
-      const totalRow = document.createElement("tr");
-      totalRow.innerHTML = `
+      // মোট আয়/ব্যয় দেখানো রো
+      const summaryRow = document.createElement("tr");
+      summaryRow.innerHTML = `
         <td colspan="2" style="font-weight: bold;">মোট</td>
         <td style="font-weight: bold;">${formatTaka(totalIncome)}</td>
         <td style="font-weight: bold;">${formatTaka(totalExpense)}</td>
       `;
-      tbody.appendChild(totalRow);
+      tbody.appendChild(summaryRow);
 
-      // নিট টাকা সারি যোগ করা
+      // নিট টাকা (আয় - ব্যয়) দেখানো রো
       const netRow = document.createElement("tr");
       netRow.innerHTML = `
         <td colspan="3" style="font-weight: bold; text-align: right;">মোট টাকা (আয় - ব্যয়)</td>
@@ -60,7 +57,6 @@ function filterByDate(userId, date) {
       tbody.appendChild(netRow);
     });
 }
-
 
 // টাকা ফরম্যাট বাংলায়
 function formatTaka(amount) {
