@@ -83,65 +83,52 @@ function renderChart(transactions, filterType = "all") {
 
 
 
-function renderSummaryChart(titlePrefix, income, expense) {
+function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
+  if (window.summaryChart) window.summaryChart.destroy(); // আগের চার্ট মুছে ফেলা
 
-  if (summaryChart) {
-    summaryChart.destroy();
-  }
+  Chart.register(ChartDataLabels);
 
-  const total = income - expense;
-
-  summaryChart = new Chart(ctx, {
+  window.summaryChart = new Chart(ctx, {
     type: "pie",
     data: {
       labels: ["আয়", "ব্যয়", "মোট"],
       datasets: [{
-        data: [income, expense, Math.abs(total)],
-        backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"],
-        borderColor: "#fff",
+        data: [income, expense, income + expense],
+        backgroundColor: ["#4CAF50", "#F44336", "#FFD700"],
         borderWidth: 1
       }]
     },
     options: {
-      responsive: true,
       plugins: {
-        // Tooltip: টাকা বড় ফন্টে
+        title: {
+          display: true,
+          text: title,
+          font: { size: 16 },
+        },
+        datalabels: {
+          color: 'blue',
+          font: {
+            size: 14,
+            weight: 'bold'
+          },
+          formatter: (value, context) => {
+            const dataset = context.chart.data.datasets[0].data;
+            const total = dataset.reduce((a, b) => a + b, 0);
+            const percentage = (value / total) * 100;
+            return percentage.toFixed(1) + "%";
+          }
+        },
         tooltip: {
           callbacks: {
             label: function(context) {
-              const label = context.label || '';
-              const value = context.raw || 0;
+              const value = context.parsed;
+              const label = context.label;
               return `${label}: ${formatTaka(value)}`;
-            },
-            labelTextColor: () => '#000',
-            titleFont: { size: 14 },
-            bodyFont: { size: 18 } // বড় ফন্টে টাকা
-          }
-        },
-        // Title
-        title: {
-          display: true,
-          text: `${titlePrefix}`,
-          font: { size: 18 }
-        },
-        // Percent display inside slices
-        datalabels: {
-          color: "#000",
-          font: {
-            weight: 'bold',
-            size: 14
+            }
           },
-          formatter: (value, context) => {
-            const data = context.chart.data.datasets[0].data;
-            const sum = data.reduce((a, b) => a + b, 0);
-            const percentage = ((value / sum) * 100).toFixed(1);
-            return `${percentage}%`;
-          }
-        },
-        legend: {
-          labels: {
-            font: { size: 14 }
+          bodyFont: {
+            size: 18 // ক্লিক করলে টাকার ফন্ট বড় দেখাবে
           }
         }
       }
@@ -149,5 +136,3 @@ function renderSummaryChart(titlePrefix, income, expense) {
     plugins: [ChartDataLabels]
   });
 }
-
-
