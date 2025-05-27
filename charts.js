@@ -79,7 +79,6 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-let summaryChart;
 
 function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
