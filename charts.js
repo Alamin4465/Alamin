@@ -80,6 +80,7 @@ function renderChart(transactions, filterType = "all") {
 }
 
 
+
 function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
@@ -88,39 +89,45 @@ function renderSummaryChart(titlePrefix, income, expense) {
   }
 
   const total = income - expense;
-  const formattedTotal = formatTaka(total); // তোমার formatTaka ফাংশন ধরে নিচ্ছি
-  const title = `${titlePrefix} | মোট: ${formattedTotal}`;
-
+  
   summaryChart = new Chart(ctx, {
     type: "pie",
     data: {
-      labels: ["আয়", "ব্যয়"],
+      labels: ["আয়", "ব্যয়", "মোট"],
       datasets: [{
-        data: [income, expense],
-        backgroundColor: ["#4caf50", "#f44336"],
+        data: [income, expense, Math.abs(total)],
+        backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"], // সবুজ, লাল, হলুদ
+        borderColor: "#fff",
         borderWidth: 1
       }]
     },
     options: {
       responsive: true,
       plugins: {
-        title: {
-          display: true,
-          text: title,
-          font: {
-            size: 18
-          }
-        },
         legend: {
           labels: {
             font: {
               size: 14
             }
           }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+              return `${label}: ${formatTaka(value)}`;
+            }
+          }
+        },
+        title: {
+          display: true,
+          text: `${titlePrefix}`,
+          font: {
+            size: 18
+          }
         }
       }
     }
   });
 }
-
-
