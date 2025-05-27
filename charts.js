@@ -79,14 +79,18 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
+let summaryChart;
 
-
-function renderSummaryChart(title, income, expense) {
+function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
   if (summaryChart) {
     summaryChart.destroy();
   }
+
+  const total = income - expense;
+  const formattedTotal = formatTaka(total); // তোমার formatTaka ফাংশন ধরে নিচ্ছি
+  const title = `${titlePrefix} | মোট: ${formattedTotal}`;
 
   summaryChart = new Chart(ctx, {
     type: "pie",
@@ -119,3 +123,5 @@ function renderSummaryChart(title, income, expense) {
     }
   });
 }
+
+
