@@ -120,13 +120,13 @@ function calculateDailySummary(userId, date) {
             <td>আজকের আয়</td>
             <td>${formatTaka(income)}</td>
             <td></td>
-            <td>+${formatTaka(income)}</td>
+            
           </tr>
           <tr>
             <td>আজকের ব্যয়</td>
             <td></td>
             <td>${formatTaka(expense)}</td>
-            <td>-${formatTaka(expense)}</td>
+            <td>${formatTaka(total)}</td>
           </tr>
           <tr>
             <td colspan="3">মোট</td>
