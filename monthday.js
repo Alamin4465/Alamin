@@ -120,7 +120,7 @@ function calculateDailySummary(userId, date) {
             <td>আজকের আয়</td>
             <td>${formatTaka(income)}</td>
             <td></td>
-            
+            <td></td>
           </tr>
           <tr>
             <td>আজকের ব্যয়</td>
@@ -139,7 +139,6 @@ function calculateDailySummary(userId, date) {
       renderSummaryChart(`${dateLabel} - আয় বনাম ব্যয়`, income, expense);
     });
 }
-
 
 // মাস ফিল্টার ইভেন্ট লিসেনার
 document.getElementById("monthFilter").addEventListener("change", () => {
