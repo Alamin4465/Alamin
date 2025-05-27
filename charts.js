@@ -78,3 +78,44 @@ function renderChart(transactions, filterType = "all") {
     chartInstance.render();
   }
 }
+
+
+
+function renderSummaryChart(title, income, expense) {
+  const ctx = document.getElementById("summaryChart").getContext("2d");
+
+  if (summaryChart) {
+    summaryChart.destroy();
+  }
+
+  summaryChart = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["আয়", "ব্যয়"],
+      datasets: [{
+        data: [income, expense],
+        backgroundColor: ["#4caf50", "#f44336"],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+          font: {
+            size: 18
+          }
+        },
+        legend: {
+          labels: {
+            font: {
+              size: 14
+            }
+          }
+        }
+      }
+    }
+  });
+}
