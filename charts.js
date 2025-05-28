@@ -1,9 +1,8 @@
 // chart.js
-import { db } from './firebase.js';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
 Chart.register(ChartDataLabels);
-
 let summaryChart;
+// chart.js
 let chartInstance;
 
 function generateCategoryMap(transactions, filterType, type) {
@@ -18,6 +17,7 @@ function generateCategoryMap(transactions, filterType, type) {
     map[category] = (map[category] || 0) + amount;
   });
 
+  // Sort by amount descending
   return Object.entries(map)
     .sort((a, b) => b[1] - a[1])
     .reduce((acc, [cat, val]) => {
@@ -64,7 +64,7 @@ function renderChart(transactions, filterType = "all") {
         fontSize: '13px',
         fontWeight: 'bold'
       },
-      formatter: function (val) {
+      formatter: function (val, opts) {
         return val.toFixed(1) + "%";
       }
     },
@@ -113,6 +113,7 @@ function renderSummaryChart(titlePrefix, income, expense) {
     options: {
       responsive: true,
       plugins: {
+        // Tooltip: টাকা বড় ফন্টে
         tooltip: {
           callbacks: {
             label: function(context) {
@@ -122,14 +123,16 @@ function renderSummaryChart(titlePrefix, income, expense) {
             },
             labelTextColor: () => '#ffeb3b',
             titleFont: { size: 18 },
-            bodyFont: { size: 18 }
+            bodyFont: { size: 18 } // বড় ফন্টে টাকা
           }
         },
+        // Title
         title: {
           display: true,
           text: `${titlePrefix}`,
           font: { size: 18 }
         },
+        // Percent display inside slices
         datalabels: {
           color: "#000",
           font: {
@@ -145,39 +148,11 @@ function renderSummaryChart(titlePrefix, income, expense) {
         },
         legend: {
           labels: {
-            font: { size: 18 }
+            font: { size: 18}
           }
         }
       }
     },
     plugins: [ChartDataLabels]
   });
-}
-
-// টাকা ফরম্যাট ফাংশন
-function formatTaka(amount) {
-  return `৳ ${amount.toLocaleString("bn-BD")}`;
-}
-
-// 🔄 Firestore থেকে লোড করে চার্ট রেন্ডার
-export async function loadChartDataFromFirestore(uid, filterType = "all") {
-  const q = query(collection(db, "transactions"), where("uid", "==", uid));
-  const querySnapshot = await getDocs(q);
-  const transactions = querySnapshot.docs.map(doc => doc.data());
-
-  renderChart(transactions, filterType);
-
-  const totalIncome = transactions
-    .filter(txn => txn.type === 'income')
-    .reduce((sum, txn) => sum + parseFloat(txn.amount || 0), 0);
-
-  const totalExpense = transactions
-    .filter(txn => txn.type === 'expense')
-    .reduce((sum, txn) => sum + parseFloat(txn.amount || 0), 0);
-
-  let titleText = "মোট (আয় - ব্যয়)";
-  if (filterType === 'income') titleText = "মোট আয়";
-  else if (filterType === 'expense') titleText = "মোট ব্যয়";
-
-  renderSummaryChart(titleText, totalIncome, totalExpense);
 }
