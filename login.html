@@ -1,20 +1,121 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>লগইন</title>
-  <link rel="stylesheet" href="style.css">
+  
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
+  
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #333;
+      padding: 15px;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 2.5rem 3rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      width: 350px;
+      text-align: center;
+    }
+
+    .container h2 {
+      color: #2575fc;
+      margin-bottom: 2rem;
+      font-weight: 700;
+      font-size: 1.9rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input[type="email"],
+    input[type="password"] {
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.3rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1.8px solid #ddd;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #2575fc;
+      box-shadow: 0 0 8px rgba(37, 117, 252, 0.4);
+    }
+
+    button {
+      background-color: #2575fc;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #1a53d1;
+    }
+
+    p {
+      margin-top: 1.5rem;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    p a {
+      color: #2575fc;
+      text-decoration: none;
+      font-weight: 600;
+      transition: text-decoration 0.3s ease;
+    }
+
+    p a:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media(max-width: 400px) {
+      .container {
+        width: 90%;
+        padding: 2rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h2>লগইন ফর্ম</h2>
     <form id="loginForm">
-      <input type="email" id="loginEmail" placeholder="ইমেইল" required>
-      <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড" required>
+      <input type="email" id="loginEmail" placeholder="ইমেইল" required />
+      <input type="password" id="loginPassword" placeholder="পাসওয়ার্ড" required />
       <button type="submit">লগইন</button>
       <p>অ্যাকাউন্ট নেই? <a href="register.html">রেজিস্টার করুন</a></p>
     </form>
