@@ -80,62 +80,69 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-// Register plugins ONCE during app initialization (not inside function)
-// Chart.register(ChartDataLabels);
-
-function renderSummaryChart(title, income, expense) {
+function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
-  if (window.summaryChart) window.summaryChart.destroy();
 
-  window.summaryChart = new Chart(ctx, {
+  if (summaryChart) {
+    summaryChart.destroy();
+  }
+
+  const total = income - expense;
+
+  summaryChart = new Chart(ctx, {
     type: "pie",
     data: {
-      labels: ["আয়", "ব্যয়"], // Removed "মোট"
+      labels: ["আয়", "ব্যয়", "মোট"],
       datasets: [{
-        data: [income, expense], // Only income/expense
-        backgroundColor: ["#4CAF50", "#F44336"], // Removed yellow
+        data: [income, expense, Math.abs(total)],
+        backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"],
+        borderColor: "#fff",
         borderWidth: 1
       }]
     },
     options: {
       responsive: true,
       plugins: {
-        title: {
-          display: true,
-          text: title,
-          font: { size: 16 }
-        },
-        datalabels: {
-          color: 'blue',
-          font: { size: 14, weight: 'bold' },
-          formatter: (value, context) => {
-            const total = income + expense; // Correct total
-            const percentage = (value / total) * 100;
-            return percentage.toFixed(1) + "%";
-          }
-        },
+        // Tooltip: টাকা বড় ফন্টে
         tooltip: {
-          backgroundColor: '#fff', // Visible background
-          displayColors: true, // Show color indicators
-          titleColor: '#000',
-          bodyColor: '#333',
-          borderColor: 'rgba(0,0,0,0.1)',
-          borderWidth: 1,
-          bodyFont: { size: 14 }, // Reasonable size
           callbacks: {
             label: function(context) {
-              // ADD MISSING formatTaka FUNCTION!
-              return `${context.label}: ${formatTaka(context.parsed)}`;
-            }
+              const label = context.label || '';
+              const value = context.raw || 0;
+              return `${label}: ${formatTaka(value)}`;
+            },
+            labelTextColor: () => '#000',
+            titleFont: { size: 14 },
+            bodyFont: { size: 18 } // বড় ফন্টে টাকা
+          }
+        },
+        // Title
+        title: {
+          display: true,
+          text: `${titlePrefix}`,
+          font: { size: 18 }
+        },
+        // Percent display inside slices
+        datalabels: {
+          color: "#000",
+          font: {
+            weight: 'bold',
+            size: 14
+          },
+          formatter: (value, context) => {
+            const data = context.chart.data.datasets[0].data;
+            const sum = data.reduce((a, b) => a + b, 0);
+            const percentage = ((value / sum) * 100).toFixed(1);
+            return `${percentage}%`;
+          }
+        },
+        legend: {
+          labels: {
+            font: { size: 14 }
           }
         }
       }
     },
-    plugins: [ChartDataLabels] // Plugin instance
+    plugins: [ChartDataLabels]
   });
-}
-
-// Example number formatter (define this globally)
-function formatTaka(value) {
-  return '৳' + value.toLocaleString('bn-BD'); 
 }
