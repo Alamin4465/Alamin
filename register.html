@@ -2,130 +2,103 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>নিবন্ধন</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>নিবন্ধন ফর্ম</title>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script>
 
   <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
     body {
       background: radial-gradient(circle at top right, #a1c4fd, #c2e9fb);
       min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: flex; justify-content: center; align-items: center;
       padding: 20px;
     }
-
     .register-box {
-      background: #ffffff;
+      background: white;
       padding: 40px 30px;
       border-radius: 14px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 400px;
     }
-
     .register-box h2 {
       text-align: center;
       color: #2d3436;
       margin-bottom: 25px;
       font-size: 1.8rem;
     }
-
     .input-group {
-      position: relative;
       margin-bottom: 18px;
+      position: relative;
     }
-
-    .register-box input,
-    .register-box select {
+    input, select {
       width: 100%;
       padding: 14px 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
       font-size: 1rem;
-      transition: all 0.3s ease;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: border-color 0.3s ease;
     }
-
-    input.valid { border-color: green; }
-    input.invalid { border-color: red; }
-
-    .register-box input:focus,
-    .register-box select:focus {
+    input:focus, select:focus {
       border-color: #0984e3;
       outline: none;
-      box-shadow: 0 0 6px rgba(9, 132, 227, 0.3);
+      box-shadow: 0 0 6px rgba(9,132,227,0.3);
     }
-
     .status-icon {
       position: absolute;
-      right: 14px;
+      right: 16px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 1rem;
+      font-size: 1.2rem;
+      pointer-events: none;
     }
-
+    input.valid { border-color: green; }
+    input.invalid { border-color: red; }
     .error-text {
       color: red;
       font-size: 0.85rem;
-      margin-top: 3px;
+      margin-top: 4px;
     }
-
-    .register-box button {
+    button {
       width: 100%;
       padding: 14px;
-      background: #0984e3;
-      color: #fff;
       font-size: 1.1rem;
-      font-weight: bold;
+      font-weight: 700;
+      background-color: #0984e3;
       border: none;
       border-radius: 8px;
+      color: white;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s ease;
     }
-
-    .register-box button:disabled {
-      background: #ccc;
+    button:disabled {
+      background-color: #ccc;
       cursor: not-allowed;
     }
-
-    .register-box button:hover:not(:disabled) {
-      background: #0652dd;
+    button:hover:not(:disabled) {
+      background-color: #0652dd;
     }
-
-    .register-box p {
-      text-align: center;
+    p {
       margin-top: 18px;
+      text-align: center;
       font-size: 0.95rem;
       color: #555;
     }
-
-    .register-box a {
+    a {
       color: #0984e3;
-      text-decoration: none;
       font-weight: 600;
+      text-decoration: none;
     }
-
-    .register-box a:hover {
+    a:hover {
       text-decoration: underline;
-    }
-
-    @media (max-width: 400px) {
-      .register-box {
-        padding: 30px 20px;
-      }
     }
   </style>
 </head>
@@ -133,32 +106,29 @@
 
   <div class="register-box">
     <h2>নিবন্ধন ফর্ম</h2>
-    <form id="registerForm">
+    <form id="registerForm" novalidate>
       <div class="input-group">
-        <input type="text" id="name" placeholder="নাম" required>
+        <input type="text" id="name" placeholder="নাম" required minlength="3" />
       </div>
-
       <div class="input-group">
-        <input type="email" id="email" placeholder="ইমেইল" required>
+        <input type="email" id="email" placeholder="ইমেইল" required />
         <span id="emailStatus" class="status-icon"></span>
+        <div id="emailError" class="error-text"></div>
       </div>
-
       <div class="input-group">
-        <input type="password" id="password" placeholder="পাসওয়ার্ড" required>
+        <input type="password" id="password" placeholder="পাসওয়ার্ড" required minlength="6" />
         <span id="passStatus" class="status-icon"></span>
         <div id="passError" class="error-text"></div>
       </div>
-
       <div class="input-group">
-        <input type="password" id="confirmPassword" placeholder="পাসওয়ার্ড নিশ্চিত করুন" required>
+        <input type="password" id="confirmPassword" placeholder="পাসওয়ার্ড নিশ্চিত করুন" required />
         <span id="confirmStatus" class="status-icon"></span>
         <div id="confirmError" class="error-text"></div>
       </div>
-
       <div class="input-group">
-        <input type="number" id="age" placeholder="বয়স" required>
+        <input type="number" id="age" placeholder="বয়স" required min="1" max="150" />
+        <div id="ageError" class="error-text"></div>
       </div>
-
       <div class="input-group">
         <select id="gender" required>
           <option value="">লিঙ্গ নির্বাচন করুন</option>
@@ -166,13 +136,13 @@
           <option value="মহিলা">মহিলা</option>
           <option value="অন্যান্য">অন্যান্য</option>
         </select>
+        <div id="genderError" class="error-text"></div>
       </div>
 
-      <button type="submit" id="submitBtn">নিবন্ধন</button>
-      <p>অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
+      <button type="submit" id="submitBtn" disabled>নিবন্ধন</button>
+      <div id="formMessage" class="error-text" style="text-align:center; margin-top:10px;"></div>
     </form>
+    <p>অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
   </div>
-
-  <script src="login-register.js"></script>
 </body>
 </html>
