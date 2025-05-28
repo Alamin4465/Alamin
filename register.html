@@ -44,22 +44,43 @@
       font-size: 1.8rem;
     }
 
+    .input-group {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
     .register-box input,
     .register-box select {
       width: 100%;
       padding: 14px 16px;
-      margin-bottom: 18px;
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 1rem;
       transition: all 0.3s ease;
     }
 
+    input.valid { border-color: green; }
+    input.invalid { border-color: red; }
+
     .register-box input:focus,
     .register-box select:focus {
       border-color: #0984e3;
       outline: none;
       box-shadow: 0 0 6px rgba(9, 132, 227, 0.3);
+    }
+
+    .status-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+    }
+
+    .error-text {
+      color: red;
+      font-size: 0.85rem;
+      margin-top: 3px;
     }
 
     .register-box button {
@@ -75,7 +96,12 @@
       transition: background 0.3s ease;
     }
 
-    .register-box button:hover {
+    .register-box button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .register-box button:hover:not(:disabled) {
       background: #0652dd;
     }
 
@@ -108,17 +134,41 @@
   <div class="register-box">
     <h2>নিবন্ধন ফর্ম</h2>
     <form id="registerForm">
-      <input type="text" id="name" placeholder="নাম" required>
-      <input type="email" id="email" placeholder="ইমেইল" required>
-      <input type="password" id="password" placeholder="পাসওয়ার্ড" required>
-      <input type="number" id="age" placeholder="বয়স" required>
-      <select id="gender" required>
-        <option value="">লিঙ্গ নির্বাচন করুন</option>
-        <option value="পুরুষ">পুরুষ</option>
-        <option value="মহিলা">মহিলা</option>
-        <option value="অন্যান্য">অন্যান্য</option>
-      </select>
-      <button type="submit">নিবন্ধন</button>
+      <div class="input-group">
+        <input type="text" id="name" placeholder="নাম" required>
+      </div>
+
+      <div class="input-group">
+        <input type="email" id="email" placeholder="ইমেইল" required>
+        <span id="emailStatus" class="status-icon"></span>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="password" placeholder="পাসওয়ার্ড" required>
+        <span id="passStatus" class="status-icon"></span>
+        <div id="passError" class="error-text"></div>
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="confirmPassword" placeholder="পাসওয়ার্ড নিশ্চিত করুন" required>
+        <span id="confirmStatus" class="status-icon"></span>
+        <div id="confirmError" class="error-text"></div>
+      </div>
+
+      <div class="input-group">
+        <input type="number" id="age" placeholder="বয়স" required>
+      </div>
+
+      <div class="input-group">
+        <select id="gender" required>
+          <option value="">লিঙ্গ নির্বাচন করুন</option>
+          <option value="পুরুষ">পুরুষ</option>
+          <option value="মহিলা">মহিলা</option>
+          <option value="অন্যান্য">অন্যান্য</option>
+        </select>
+      </div>
+
+      <button type="submit" id="submitBtn" disabled>নিবন্ধন</button>
       <p>অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></p>
     </form>
   </div>
