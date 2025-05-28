@@ -5,28 +5,35 @@ let summaryChart;
 // chart.js
 let chartInstance;
 
-function renderChart(transactions, filterType = "all") {
-  const incomeCategoryMap = {};
-  const expenseCategoryMap = {};
-
+function generateCategoryMap(transactions, filterType, type) {
+  const map = {};
   transactions.forEach(txn => {
-    const type = txn.type || "expense";
-    if (filterType !== "all" && type !== filterType) return;
+    const txnType = txn.type || "expense";
+    if ((filterType !== "all" && txnType !== filterType) || txnType !== type) return;
 
     const category = txn.category || "অন্যান্য";
     const amount = parseFloat(txn.amount) || 0;
 
-    if (type === "income") {
-      incomeCategoryMap[category] = (incomeCategoryMap[category] || 0) + amount;
-    } else {
-      expenseCategoryMap[category] = (expenseCategoryMap[category] || 0) + amount;
-    }
+    map[category] = (map[category] || 0) + amount;
   });
 
-  const incomeCategories = Object.keys(incomeCategoryMap);
-  const incomeValues = Object.values(incomeCategoryMap);
-  const expenseCategories = Object.keys(expenseCategoryMap);
-  const expenseValues = Object.values(expenseCategoryMap);
+  // Sort by amount descending
+  return Object.entries(map)
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc, [cat, val]) => {
+      acc[cat] = val;
+      return acc;
+    }, {});
+}
+
+function renderChart(transactions, filterType = "all") {
+  const incomeMap = generateCategoryMap(transactions, filterType, "income");
+  const expenseMap = generateCategoryMap(transactions, filterType, "expense");
+
+  const incomeCategories = Object.keys(incomeMap);
+  const incomeValues = Object.values(incomeMap);
+  const expenseCategories = Object.keys(expenseMap);
+  const expenseValues = Object.values(expenseMap);
 
   const series = [...incomeValues, ...expenseValues];
   const labels = [
@@ -34,39 +41,42 @@ function renderChart(transactions, filterType = "all") {
     ...expenseCategories.map(c => "ব্যয়: " + c)
   ];
 
-  // রঙ আলাদা করে অটো match করানো
-  const incomeColors = Array(incomeValues.length).fill().map((_, i) => `hsl(140, 70%, ${60 - i * 5}%)`);
-  const expenseColors = Array(expenseValues.length).fill().map((_, i) => `hsl(0, 70%, ${65 - i * 5}%)`);
+  const incomeColors = incomeValues.map((_, i) => `hsl(145, 60%, ${60 - i * 5}%)`);
+  const expenseColors = expenseValues.map((_, i) => `hsl(10, 70%, ${65 - i * 5}%)`);
   const colors = [...incomeColors, ...expenseColors];
 
   const options = {
     chart: {
       type: 'pie',
-      height: 450,
-      width: '100%',
+      height: 470,
       toolbar: { show: false }
     },
     series: series,
     labels: labels,
     colors: colors,
-    legend: { position: 'bottom' },
+    legend: {
+      position: 'bottom',
+      fontSize: '14px'
+    },
     dataLabels: {
       enabled: true,
+      style: {
+        fontSize: '13px',
+        fontWeight: 'bold'
+      },
+      formatter: function (val, opts) {
+        return val.toFixed(1) + "%";
+      }
     },
-    fill: { type: 'solid' },
+    tooltip: {
+      y: {
+        formatter: (val) => `৳ ${val.toLocaleString("bn-BD")}`
+      }
+    },
     plotOptions: {
       pie: {
         expandOnClick: true,
-        offsetY: 10,
-        dataLabels: {
-          dropShadow: {
-            enabled: true,
-            top: 1,
-            left: 1,
-            blur: 2,
-            opacity: 0.5
-          }
-        }
+        offsetY: 10
       }
     }
   };
