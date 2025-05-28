@@ -186,11 +186,11 @@ document.querySelector("#transactionTable tbody").addEventListener("click", e =>
 });
 
 // টাইপ অনুযায়ী ক্যাটেগরি
-const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য"];
+const incomeCategories = ["বেতন", "ব্যবসা", "অন্যান্য","বাইক"];
 const expenseCategories = [
   "বাসা ভাড়া", "মোবাইল রিচার্জ", "বিদ্যুৎ বিল", "পরিবহন", "দোকান বিল",
   "কেনাকাটা", "গাড়ির খরচ", "কাচা বাজার", "বাড়ি", "হাস্পাতাল",
-  "ব্যক্তিগত", "অন্যান্য", "গাড়ি তেল"
+  "ব্যক্তিগত", "অন্যান্য", "গাড়ির তেল","নাস্তা","খাওয়া"
 ];
 
 document.getElementById("type").addEventListener("change", function () {
