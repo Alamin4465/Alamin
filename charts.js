@@ -42,7 +42,7 @@ function renderChart(transactions, filterType = "all") {
   const options = {
     chart: {
       type: 'pie',
-      height: 350,
+      height: 450,
       width: '100%',
       toolbar: { show: false }
     },
