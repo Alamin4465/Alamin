@@ -46,40 +46,41 @@ function renderChart(transactions, filterType = "all") {
   const colors = [...incomeColors, ...expenseColors];
 
   const options = {
-    chart: {
-      type: 'pie',
-      height: 470,
-      toolbar: { show: false }
-    },
-    series: series,
-    labels: labels,
-    colors: colors,
-    legend: {
-      position: 'bottom',
-      fontSize: '14px'
-    },
-    dataLabels: {
-      enabled: true,
-      style: {
-        fontSize: '13px',
-        fontWeight: 'bold'
-      },
-      formatter: function (val, opts) {
-        return val.toFixed(1) + "%";
-      }
-    },
-    tooltip: {
-      y: {
-        formatter: (val) => `৳ ${val.toLocaleString("bn-BD")}`
-      }
-    },
-    plotOptions: {
-      pie: {
-        expandOnClick: true,
-        offsetY: 10
-      }
-    }
-  };
+        chart: {
+          type: 'donut',
+          height: 420
+        },
+        series: series,
+        labels: labels,
+        colors: colors,
+        legend: { position: 'bottom' },
+        dataLabels: {
+          enabled: true,
+          formatter: val => `${val.toFixed(1)}%`
+        },
+        tooltip: {
+          y: {
+            formatter: val => `৳ ${val.toLocaleString("bn-BD")}`
+          }
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '65%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: totalLabel,
+                  formatter: function () {
+                    return `৳ ${displayTotal.toLocaleString("bn-BD")}`;
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
 
   if (chartInstance) {
     chartInstance.updateOptions(options);
