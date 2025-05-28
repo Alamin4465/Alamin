@@ -1,10 +1,19 @@
 // chart.js
-// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
+import { db } from './firebase.js';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+
+// Chart.js ও Datalabels প্লাগিন রেজিস্টার
 Chart.register(ChartDataLabels);
+
 let summaryChart;
-// chart.js
 let chartInstance;
 
+// টাকা ফরম্যাট করার ফাংশন
+function formatTaka(amount) {
+  return `৳ ${amount.toLocaleString("bn-BD")}`;
+}
+
+// ক্যাটাগরি অনুযায়ী মান গণনা
 function generateCategoryMap(transactions, filterType, type) {
   const map = {};
   transactions.forEach(txn => {
@@ -17,7 +26,6 @@ function generateCategoryMap(transactions, filterType, type) {
     map[category] = (map[category] || 0) + amount;
   });
 
-  // Sort by amount descending
   return Object.entries(map)
     .sort((a, b) => b[1] - a[1])
     .reduce((acc, [cat, val]) => {
@@ -26,6 +34,7 @@ function generateCategoryMap(transactions, filterType, type) {
     }, {});
 }
 
+// Apex Pie Chart → ক্যাটাগরি ভিত্তিক
 function renderChart(transactions, filterType = "all") {
   const incomeMap = generateCategoryMap(transactions, filterType, "income");
   const expenseMap = generateCategoryMap(transactions, filterType, "expense");
@@ -64,7 +73,7 @@ function renderChart(transactions, filterType = "all") {
         fontSize: '13px',
         fontWeight: 'bold'
       },
-      formatter: function (val, opts) {
+      formatter: function (val) {
         return val.toFixed(1) + "%";
       }
     },
@@ -90,6 +99,7 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
+// Chart.js → Summary Pie Chart
 function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
@@ -113,7 +123,6 @@ function renderSummaryChart(titlePrefix, income, expense) {
     options: {
       responsive: true,
       plugins: {
-        // Tooltip: টাকা বড় ফন্টে
         tooltip: {
           callbacks: {
             label: function(context) {
@@ -123,16 +132,14 @@ function renderSummaryChart(titlePrefix, income, expense) {
             },
             labelTextColor: () => '#ffeb3b',
             titleFont: { size: 18 },
-            bodyFont: { size: 18 } // বড় ফন্টে টাকা
+            bodyFont: { size: 18 }
           }
         },
-        // Title
         title: {
           display: true,
           text: `${titlePrefix}`,
           font: { size: 18 }
         },
-        // Percent display inside slices
         datalabels: {
           color: "#000",
           font: {
@@ -148,11 +155,34 @@ function renderSummaryChart(titlePrefix, income, expense) {
         },
         legend: {
           labels: {
-            font: { size: 18}
+            font: { size: 18 }
           }
         }
       }
     },
     plugins: [ChartDataLabels]
   });
+}
+
+// 🔥 Main Firebase Fetcher & Chart Renderer
+export async function loadChartDataFromFirestore(uid, filterType = "all") {
+  const q = query(collection(db, "transactions"), where("uid", "==", uid));
+  const querySnapshot = await getDocs(q);
+  const transactions = querySnapshot.docs.map(doc => doc.data());
+
+  renderChart(transactions, filterType);
+
+  const totalIncome = transactions
+    .filter(txn => txn.type === 'income')
+    .reduce((sum, txn) => sum + parseFloat(txn.amount || 0), 0);
+
+  const totalExpense = transactions
+    .filter(txn => txn.type === 'expense')
+    .reduce((sum, txn) => sum + parseFloat(txn.amount || 0), 0);
+
+  let titleText = "মোট (আয় - ব্যয়)";
+  if (filterType === 'income') titleText = "মোট আয়";
+  else if (filterType === 'expense') titleText = "মোট ব্যয়";
+
+  renderSummaryChart(titleText, totalIncome, totalExpense);
 }
