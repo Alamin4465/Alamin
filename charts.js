@@ -111,8 +111,8 @@ function renderSummaryChart(titlePrefix, income, expense) {
               const value = context.raw || 0;
               return `${label}: ${formatTaka(value)}`;
             },
-            labelTextColor: () => '#000',
-            titleFont: { size: 14 },
+            labelTextColor: () => '#ffeb3b',
+            titleFont: { size: 18 },
             bodyFont: { size: 18 } // বড় ফন্টে টাকা
           }
         },
@@ -138,7 +138,7 @@ function renderSummaryChart(titlePrefix, income, expense) {
         },
         legend: {
           labels: {
-            font: { size: 14 }
+            font: { size: 18}
           }
         }
       }
