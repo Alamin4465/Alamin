@@ -1,19 +1,11 @@
 // chart.js
 import { db } from './firebase.js';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-
-// Chart.js ও Datalabels প্লাগিন রেজিস্টার
 Chart.register(ChartDataLabels);
 
 let summaryChart;
 let chartInstance;
 
-// টাকা ফরম্যাট করার ফাংশন
-function formatTaka(amount) {
-  return `৳ ${amount.toLocaleString("bn-BD")}`;
-}
-
-// ক্যাটাগরি অনুযায়ী মান গণনা
 function generateCategoryMap(transactions, filterType, type) {
   const map = {};
   transactions.forEach(txn => {
@@ -34,7 +26,6 @@ function generateCategoryMap(transactions, filterType, type) {
     }, {});
 }
 
-// Apex Pie Chart → ক্যাটাগরি ভিত্তিক
 function renderChart(transactions, filterType = "all") {
   const incomeMap = generateCategoryMap(transactions, filterType, "income");
   const expenseMap = generateCategoryMap(transactions, filterType, "expense");
@@ -99,7 +90,6 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
-// Chart.js → Summary Pie Chart
 function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
@@ -164,7 +154,12 @@ function renderSummaryChart(titlePrefix, income, expense) {
   });
 }
 
-// 🔥 Main Firebase Fetcher & Chart Renderer
+// টাকা ফরম্যাট ফাংশন
+function formatTaka(amount) {
+  return `৳ ${amount.toLocaleString("bn-BD")}`;
+}
+
+// 🔄 Firestore থেকে লোড করে চার্ট রেন্ডার
 export async function loadChartDataFromFirestore(uid, filterType = "all") {
   const q = query(collection(db, "transactions"), where("uid", "==", uid));
   const querySnapshot = await getDocs(q);
