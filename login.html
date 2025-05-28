@@ -2,116 +2,108 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>লগইন</title>
-  
-  <!-- Firebase SDKs -->
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
-  
+
   <style>
-    /* Reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      height: 100vh;
+      background: radial-gradient(circle at top right, #a1c4fd, #c2e9fb);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: #333;
-      padding: 15px;
+      padding: 20px;
     }
 
-    .container {
-      background-color: #fff;
-      padding: 2.5rem 3rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-      width: 350px;
+    .login-box {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .login-box h2 {
       text-align: center;
+      color: #2d3436;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
     }
 
-    .container h2 {
-      color: #2575fc;
-      margin-bottom: 2rem;
-      font-weight: 700;
-      font-size: 1.9rem;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-      padding: 0.75rem 1rem;
-      margin-bottom: 1.3rem;
-      font-size: 1rem;
+    .login-box input {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      border: 1.8px solid #ddd;
-      transition: border-color 0.3s ease;
+      font-size: 1rem;
+      transition: all 0.3s ease;
     }
 
-    input[type="email"]:focus,
-    input[type="password"]:focus {
+    .login-box input:focus {
+      border-color: #0984e3;
       outline: none;
-      border-color: #2575fc;
-      box-shadow: 0 0 8px rgba(37, 117, 252, 0.4);
+      box-shadow: 0 0 6px rgba(9, 132, 227, 0.3);
     }
 
-    button {
-      background-color: #2575fc;
-      color: white;
-      font-weight: 700;
+    .login-box button {
+      width: 100%;
+      padding: 14px;
+      background: #0984e3;
+      color: #fff;
       font-size: 1.1rem;
-      padding: 0.75rem 1rem;
+      font-weight: bold;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
 
-    button:hover {
-      background-color: #1a53d1;
+    .login-box button:hover {
+      background: #0652dd;
     }
 
-    p {
-      margin-top: 1.5rem;
+    .login-box p {
+      text-align: center;
+      margin-top: 18px;
       font-size: 0.95rem;
       color: #555;
     }
 
-    p a {
-      color: #2575fc;
+    .login-box a {
+      color: #0984e3;
       text-decoration: none;
       font-weight: 600;
-      transition: text-decoration 0.3s ease;
     }
 
-    p a:hover {
+    .login-box a:hover {
       text-decoration: underline;
     }
 
-    /* Responsive */
-    @media(max-width: 400px) {
-      .container {
-        width: 90%;
-        padding: 2rem;
+    @media (max-width: 400px) {
+      .login-box {
+        padding: 30px 20px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+
+  <div class="login-box">
     <h2>লগইন ফর্ম</h2>
     <form id="loginForm">
       <input type="email" id="loginEmail" placeholder="ইমেইল" required />
