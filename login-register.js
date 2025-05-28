@@ -1,7 +1,3 @@
-// Firebase config ফাইলটি অবশ্যই আগেই লোড হতে হবে
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
 
 // রেজিস্ট্রেশন ফর্ম যাচাই ও সাবমিট
 const registerForm = document.getElementById('registerForm');
