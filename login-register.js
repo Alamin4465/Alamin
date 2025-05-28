@@ -1,110 +1,216 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const registerForm = document.getElementById('registerForm');
-  const nameInput = document.getElementById('name');
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const confirmInput = document.getElementById('confirmPassword');
-  const ageInput = document.getElementById('age');
-  const genderSelect = document.getElementById('gender');
 
-  const emailStatus = document.getElementById('emailStatus');
-  const passStatus = document.getElementById('passStatus');
-  const confirmStatus = document.getElementById('confirmStatus');
-  const passError = document.getElementById('passError');
-  const confirmError = document.getElementById('confirmError');
 
-  function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  }
+    // DOM elements
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const formMessage = document.getElementById('formMessage');
 
-  function validatePassword(password) {
-    return password.length >= 6;
-  }
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const ageInput = document.getElementById('age');
+    const genderSelect = document.getElementById('gender');
 
-  emailInput.addEventListener('input', () => {
-    if (validateEmail(emailInput.value)) {
-      emailInput.classList.add('valid');
-      emailInput.classList.remove('invalid');
-      emailStatus.textContent = '✅';
-    } else {
-      emailInput.classList.add('invalid');
-      emailInput.classList.remove('valid');
-      emailStatus.textContent = '❌';
-    }
-  });
+    // Status & error spans
+    const emailStatus = document.getElementById('emailStatus');
+    const emailError = document.getElementById('emailError');
 
-  passwordInput.addEventListener('input', () => {
-    if (validatePassword(passwordInput.value)) {
-      passwordInput.classList.add('valid');
-      passwordInput.classList.remove('invalid');
-      passStatus.textContent = '✅';
-      passError.textContent = '';
-    } else {
-      passwordInput.classList.add('invalid');
-      passwordInput.classList.remove('valid');
-      passStatus.textContent = '❌';
-      passError.textContent = 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে';
-    }
-  });
+    const passStatus = document.getElementById('passStatus');
+    const passError = document.getElementById('passError');
 
-  confirmInput.addEventListener('input', () => {
-    if (confirmInput.value === passwordInput.value && confirmInput.value !== '') {
-      confirmInput.classList.add('valid');
-      confirmInput.classList.remove('invalid');
-      confirmStatus.textContent = '✅';
-      confirmError.textContent = '';
-    } else {
-      confirmInput.classList.add('invalid');
-      confirmInput.classList.remove('valid');
-      confirmStatus.textContent = '❌';
-      confirmError.textContent = 'পাসওয়ার্ড মিলছে না';
-    }
-  });
+    const confirmStatus = document.getElementById('confirmStatus');
+    const confirmError = document.getElementById('confirmError');
 
-  registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    const ageError = document.getElementById('ageError');
+    const genderError = document.getElementById('genderError');
 
-    const name = nameInput.value.trim();
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
-    const confirmPassword = confirmInput.value;
-    const age = ageInput.value.trim();
-    const gender = genderSelect.value;
-
-    // Validation Check
-    if (!validateEmail(email)) {
-      alert("সঠিক ইমেইল দিন");
-      return;
+    // Validation helpers
+    function setValid(input, statusEl, errorEl) {
+      input.classList.add('valid');
+      input.classList.remove('invalid');
+      if (statusEl) statusEl.textContent = '✓';
+      if (errorEl) errorEl.textContent = '';
     }
 
-    if (!validatePassword(password)) {
-      alert("পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে");
-      return;
+    function setInvalid(input, statusEl, errorEl, message) {
+      input.classList.add('invalid');
+      input.classList.remove('valid');
+      if (statusEl) statusEl.textContent = '✗';
+      if (errorEl) errorEl.textContent = message;
     }
 
-    if (password !== confirmPassword) {
-      alert("পাসওয়ার্ড নিশ্চিতকরণ মিলছে না");
-      return;
+    // Email validation
+    function validateEmail() {
+      const val = emailInput.value.trim();
+      if (!val) {
+        setInvalid(emailInput, emailStatus, emailError, 'ইমেইল প্রয়োজন');
+        return false;
+      }
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!regex.test(val)) {
+        setInvalid(emailInput, emailStatus, emailError, 'সঠিক ইমেইল লিখুন');
+        return false;
+      }
+      setValid(emailInput, emailStatus, emailError);
+      return true;
     }
 
-    try {
-      const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-      const uid = userCredential.user.uid;
-
-      await firebase.firestore().collection("users").doc(uid).set({
-        name,
-        email,
-        age,
-        gender,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      alert("নিবন্ধন সফল হয়েছে!");
-      window.location.href = "index.html"; // ড্যাশবোর্ড বা হোমপেজ
-    } catch (error) {
-      console.error("Error during registration:", error);
-      alert("ত্রুটি: " + error.message);
+    // Password validation
+    function validatePassword() {
+      const val = passwordInput.value;
+      if (val.length < 6) {
+        setInvalid(passwordInput, passStatus, passError, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষর');
+        return false;
+      }
+      setValid(passwordInput, passStatus, passError);
+      return true;
     }
-  });
+
+    // Confirm password validation
+    function validateConfirmPassword() {
+      const val = confirmPasswordInput.value;
+      if (val !== passwordInput.value) {
+        setInvalid(confirmPasswordInput, confirmStatus, confirmError, 'পাসওয়ার্ড মেলেনি');
+        return false;
+      }
+      setValid(confirmPasswordInput, confirmStatus, confirmError);
+      return true;
+    }
+
+    // Age validation
+    function validateAge() {
+      const val = ageInput.value.trim();
+      if (!val || isNaN(val) || val < 1 || val > 150) {
+        ageError.textContent = 'বয়স ১ থেকে ১৫০ এর মধ্যে হতে হবে';
+        ageInput.classList.add('invalid');
+        ageInput.classList.remove('valid');
+        return false;
+      }
+      ageError.textContent = '';
+      ageInput.classList.add('valid');
+      ageInput.classList.remove('invalid');
+      return true;
+    }
+
+    // Gender validation
+    function validateGender() {
+      if (!genderSelect.value) {
+        genderError.textContent = 'লিঙ্গ নির্বাচন করুন';
+        genderSelect.classList.add('invalid');
+        genderSelect.classList.remove('valid');
+        return false;
+      }
+      genderError.textContent = '';
+      genderSelect.classList.add('valid');
+      genderSelect.classList.remove('invalid');
+      return true;
+    }
+
+    // Name validation (min length 3)
+    function validateName() {
+      const val = nameInput.value.trim();
+      if (val.length < 3) {
+        nameInput.classList.add('invalid');
+        nameInput.classList.remove('valid');
+        return false;
+      }
+      nameInput.classList.add('valid');
+      nameInput.classList.remove('invalid');
+      return true;
+    }
+
+    // Check if all inputs valid
+    function checkFormValidity() {
+      const valid = validateName() &&
+                    validateEmail() &&
+                    validatePassword() &&
+                    validateConfirmPassword() &&
+                    validateAge() &&
+                    validateGender();
+
+      submitBtn.disabled = !valid;
+    }
+
+    // Add event listeners for real-time validation
+    nameInput.addEventListener('input', checkFormValidity);
+    emailInput.addEventListener('input', checkFormValidity);
+    passwordInput.addEventListener('input', () => {
+      validatePassword();
+      validateConfirmPassword();
+      checkFormValidity();
+    });
+    confirmPasswordInput.addEventListener('input', () => {
+      validateConfirmPassword();
+      checkFormValidity();
+    });
+    ageInput.addEventListener('input', checkFormValidity);
+    genderSelect.addEventListener('change', checkFormValidity);
+
+    // Handle form submit
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      formMessage.textContent = '';
+
+      if (!submitBtn.disabled) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'অপেক্ষা করুন...';
+
+        try {
+          const userCredential = await auth.createUserWithEmailAndPassword(emailInput.value.trim(), passwordInput.value);
+          const user = userCredential.user;
+
+          // Save extra user info in Firestore
+          await db.collection('users').doc(user.uid).set({
+            name: nameInput.value.trim(),
+            email: emailInput.value.trim(),
+            age: Number(ageInput.value),
+            gender: genderSelect.value,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+
+          formMessage.style.color = 'green';
+          formMessage.textContent = 'নিবন্ধন সফল হয়েছে! লগইন পৃষ্ঠায় নিয়ে যাওয়া হচ্ছে...';
+
+          setTimeout(() => {
+            window.location.href = 'login.html';
+          }, 2000);
+
+        } catch (error) {
+          formMessage.style.color = 'red';
+          if (error.code === 'auth/email-already-in-use') {
+            formMessage.textContent = 'এই ইমেইল আগে থেকেই ব্যবহার করা হয়েছে।';
+          } else if (error.code === 'auth/invalid-email') {
+            formMessage.textContent = 'ইমেইল ঠিকমত নয়।';
+          } else if (error.code === 'auth/weak-password') {
+            formMessage.textContent = 'পাসওয়ার্ড দুর্বল।';
+          } else {
+            formMessage.textContent = error.message;
+          }
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'নিবন্ধন';
+        }
+      }
+    });
+
+    // প্রথমে চেক করো যেন বাটন ডিসেবল থাকে
+    checkFormValidity();
+
+// Login Logic
+document.getElementById('loginForm')?.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .then(() => {
+      alert("লগইন সফল");
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      alert("লগইন ব্যর্থ: " + error.message);
+    });
 });
+
