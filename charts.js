@@ -80,23 +80,25 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
+// Register plugins ONCE during app initialization (not inside function)
+// Chart.register(ChartDataLabels);
+
 function renderSummaryChart(title, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
   if (window.summaryChart) window.summaryChart.destroy();
 
-  Chart.register(ChartDataLabels);
-
   window.summaryChart = new Chart(ctx, {
     type: "pie",
     data: {
-      labels: ["আয়", "ব্যয়", "মোট"],
+      labels: ["আয়", "ব্যয়"], // Removed "মোট"
       datasets: [{
-        data: [income, expense, income + expense],
-        backgroundColor: ["#4CAF50", "#F44336", "#FFD700"], // হলুদ = মোট
+        data: [income, expense], // Only income/expense
+        backgroundColor: ["#4CAF50", "#F44336"], // Removed yellow
         borderWidth: 1
       }]
     },
     options: {
+      responsive: true,
       plugins: {
         title: {
           display: true,
@@ -105,38 +107,35 @@ function renderSummaryChart(title, income, expense) {
         },
         datalabels: {
           color: 'blue',
-          font: {
-            size: 14,
-            weight: 'bold'
-          },
+          font: { size: 14, weight: 'bold' },
           formatter: (value, context) => {
-            const dataset = context.chart.data.datasets[0].data;
-            const total = dataset.reduce((a, b) => a + b, 0);
+            const total = income + expense; // Correct total
             const percentage = (value / total) * 100;
             return percentage.toFixed(1) + "%";
-          },
-          display: (ctx) => ctx.dataIndex !== 2  // শুধু আয়/ব্যয়-এ % দেখাও, মোট-এ না চাইলে
+          }
         },
         tooltip: {
-          backgroundColor: 'transparent',
-          titleColor: 'blue',
-          bodyColor: 'blue',
-          borderColor: 'blue',
-          borderWidth: 0,
-          displayColors: false,
-          bodyFont: {
-            size: 18
-          },
+          backgroundColor: '#fff', // Visible background
+          displayColors: true, // Show color indicators
+          titleColor: '#000',
+          bodyColor: '#333',
+          borderColor: 'rgba(0,0,0,0.1)',
+          borderWidth: 1,
+          bodyFont: { size: 14 }, // Reasonable size
           callbacks: {
             label: function(context) {
-              const value = context.parsed;
-              const label = context.label;
-              return `${label}: ${formatTaka(value)}`;
+              // ADD MISSING formatTaka FUNCTION!
+              return `${context.label}: ${formatTaka(context.parsed)}`;
             }
           }
         }
       }
     },
-    plugins: [ChartDataLabels]
+    plugins: [ChartDataLabels] // Plugin instance
   });
+}
+
+// Example number formatter (define this globally)
+function formatTaka(value) {
+  return '৳' + value.toLocaleString('bn-BD'); 
 }
