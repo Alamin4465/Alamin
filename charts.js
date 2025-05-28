@@ -1,158 +1,53 @@
-// chart.js
-// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
-Chart.register(ChartDataLabels);
-let summaryChart;
-// chart.js
-let chartInstance;
+// chart.js // Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো Chart.register(ChartDataLabels);
 
-function generateCategoryMap(transactions, filterType, type) {
-  const map = {};
-  transactions.forEach(txn => {
-    const txnType = txn.type || "expense";
-    if ((filterType !== "all" && txnType !== filterType) || txnType !== type) return;
+import { db } from './firebase.js'; import { collection, query, where, getDocs } from 'firebase/firestore';
 
-    const category = txn.category || "অন্যান্য";
-    const amount = parseFloat(txn.amount) || 0;
+let summaryChart; let chartInstance;
 
-    map[category] = (map[category] || 0) + amount;
-  });
+function generateCategoryMap(transactions, filterType, type) { const map = {}; transactions.forEach(txn => { const txnType = txn.type || "expense"; if ((filterType !== "all" && txnType !== filterType) || txnType !== type) return;
 
-  // Sort by amount descending
-  return Object.entries(map)
-    .sort((a, b) => b[1] - a[1])
-    .reduce((acc, [cat, val]) => {
-      acc[cat] = val;
-      return acc;
-    }, {});
-}
+const category = txn.category || "অন্যান্য";
+const amount = parseFloat(txn.amount) || 0;
 
-function renderChart(transactions, filterType = "all") {
-  const incomeMap = generateCategoryMap(transactions, filterType, "income");
-  const expenseMap = generateCategoryMap(transactions, filterType, "expense");
+map[category] = (map[category] || 0) + amount;
 
-  const incomeCategories = Object.keys(incomeMap);
-  const incomeValues = Object.values(incomeMap);
-  const expenseCategories = Object.keys(expenseMap);
-  const expenseValues = Object.values(expenseMap);
+});
 
-  const series = [...incomeValues, ...expenseValues];
-  const labels = [
-    ...incomeCategories.map(c => "আয়: " + c),
-    ...expenseCategories.map(c => "ব্যয়: " + c)
-  ];
+return Object.entries(map) .sort((a, b) => b[1] - a[1]) .reduce((acc, [cat, val]) => { acc[cat] = val; return acc; }, {}); }
 
-  const incomeColors = incomeValues.map((_, i) => `hsl(145, 60%, ${60 - i * 5}%)`);
-  const expenseColors = expenseValues.map((_, i) => `hsl(10, 70%, ${65 - i * 5}%)`);
-  const colors = [...incomeColors, ...expenseColors];
+function renderChart(transactions, filterType = "all") { const incomeMap = generateCategoryMap(transactions, filterType, "income"); const expenseMap = generateCategoryMap(transactions, filterType, "expense");
 
-  const options = {
-    chart: {
-      type: 'pie',
-      height: 470,
-      toolbar: { show: false }
-    },
-    series: series,
-    labels: labels,
-    colors: colors,
-    legend: {
-      position: 'bottom',
-      fontSize: '14px'
-    },
-    dataLabels: {
-      enabled: true,
-      style: {
-        fontSize: '13px',
-        fontWeight: 'bold'
-      },
-      formatter: function (val, opts) {
-        return val.toFixed(1) + "%";
-      }
-    },
-    tooltip: {
-      y: {
-        formatter: (val) => `৳ ${val.toLocaleString("bn-BD")}`
-      }
-    },
-    plotOptions: {
-      pie: {
-        expandOnClick: true,
-        offsetY: 10
-      }
-    }
-  };
+const incomeCategories = Object.keys(incomeMap); const incomeValues = Object.values(incomeMap); const expenseCategories = Object.keys(expenseMap); const expenseValues = Object.values(expenseMap);
 
-  if (chartInstance) {
-    chartInstance.updateOptions(options);
-    chartInstance.updateSeries(series);
-  } else {
-    chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options);
-    chartInstance.render();
-  }
-}
+const series = [...incomeValues, ...expenseValues]; const labels = [ ...incomeCategories.map(c => "আয়: " + c), ...expenseCategories.map(c => "ব্যয়: " + c) ];
 
-function renderSummaryChart(titlePrefix, income, expense) {
-  const ctx = document.getElementById("summaryChart").getContext("2d");
+const incomeColors = incomeValues.map((, i) => hsl(145, 60%, ${60 - i * 5}%)); const expenseColors = expenseValues.map((, i) => hsl(10, 70%, ${65 - i * 5}%)); const colors = [...incomeColors, ...expenseColors];
 
-  if (summaryChart) {
-    summaryChart.destroy();
-  }
+const options = { chart: { type: 'pie', height: 470, toolbar: { show: false } }, series: series, labels: labels, colors: colors, legend: { position: 'bottom', fontSize: '14px' }, dataLabels: { enabled: true, style: { fontSize: '13px', fontWeight: 'bold' }, formatter: function (val, opts) { return val.toFixed(1) + "%"; } }, tooltip: { y: { formatter: (val) => ৳ ${val.toLocaleString("bn-BD")} } }, plotOptions: { pie: { expandOnClick: true, offsetY: 10 } } };
 
-  const total = income - expense;
+if (chartInstance) { chartInstance.updateOptions(options); chartInstance.updateSeries(series); } else { chartInstance = new ApexCharts(document.querySelector("#categoryChart"), options); chartInstance.render(); } }
 
-  summaryChart = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["আয়", "ব্যয়", "মোট"],
-      datasets: [{
-        data: [income, expense, Math.abs(total)],
-        backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"],
-        borderColor: "#fff",
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        // Tooltip: টাকা বড় ফন্টে
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const label = context.label || '';
-              const value = context.raw || 0;
-              return `${label}: ${formatTaka(value)}`;
-            },
-            labelTextColor: () => '#ffeb3b',
-            titleFont: { size: 18 },
-            bodyFont: { size: 18 } // বড় ফন্টে টাকা
-          }
-        },
-        // Title
-        title: {
-          display: true,
-          text: `${titlePrefix}`,
-          font: { size: 18 }
-        },
-        // Percent display inside slices
-        datalabels: {
-          color: "#000",
-          font: {
-            weight: 'bold',
-            size: 14
-          },
-          formatter: (value, context) => {
-            const data = context.chart.data.datasets[0].data;
-            const sum = data.reduce((a, b) => a + b, 0);
-            const percentage = ((value / sum) * 100).toFixed(1);
-            return `${percentage}%`;
-          }
-        },
-        legend: {
-          labels: {
-            font: { size: 18}
-          }
-        }
-      }
-    },
-    plugins: [ChartDataLabels]
-  });
-}
+function renderSummaryChart(titlePrefix, income, expense) { const ctx = document.getElementById("summaryChart").getContext("2d");
+
+if (summaryChart) { summaryChart.destroy(); }
+
+const total = income - expense;
+
+summaryChart = new Chart(ctx, { type: "pie", data: { labels: ["আয়", "ব্যয়", "মোট"], datasets: [{ data: [income, expense, Math.abs(total)], backgroundColor: ["#4caf50", "#f44336", "#ffeb3b"], borderColor: "#fff", borderWidth: 1 }] }, options: { responsive: true, plugins: { tooltip: { callbacks: { label: function(context) { const label = context.label || ''; const value = context.raw || 0; return ${label}: ${formatTaka(value)}; }, labelTextColor: () => '#ffeb3b', titleFont: { size: 18 }, bodyFont: { size: 18 } } }, title: { display: true, text: ${titlePrefix}, font: { size: 18 } }, datalabels: { color: "#000", font: { weight: 'bold', size: 14 }, formatter: (value, context) => { const data = context.chart.data.datasets[0].data; const sum = data.reduce((a, b) => a + b, 0); const percentage = ((value / sum) * 100).toFixed(1); return ${percentage}%; } }, legend: { labels: { font: { size: 18 } } } } }, plugins: [ChartDataLabels] }); }
+
+async function loadChartDataFromFirestore(uid, filterType = "all") { const q = query(collection(db, "transactions"), where("uid", "==", uid)); const querySnapshot = await getDocs(q);
+
+const transactions = querySnapshot.docs.map(doc => doc.data());
+
+renderChart(transactions, filterType);
+
+const totalIncome = transactions .filter(txn => txn.type === 'income') .reduce((sum, txn) => sum + parseFloat(txn.amount || 0), 0);
+
+const totalExpense = transactions .filter(txn => txn.type === 'expense') .reduce((sum, txn) => sum + parseFloat(txn.amount || 0), 0);
+
+let titleText = "মোট (আয় - ব্যয়)"; if (filterType === 'income') titleText = "মোট আয়"; else if (filterType === 'expense') titleText = "মোট ব্যয়";
+
+renderSummaryChart(titleText, totalIncome, totalExpense); }
+
+function formatTaka(amount) { return ৳ ${amount.toLocaleString("bn-BD")}; }
+
