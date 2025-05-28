@@ -1,10 +1,15 @@
-// chart.js
-// Chart.js ও Datalabels প্লাগিন একবার রেজিস্টার করো
+// ✅ Chart.js Datalabels plugin register
 Chart.register(ChartDataLabels);
-let summaryChart;
-// chart.js
-let chartInstance;
 
+let chartInstance; // For ApexCharts donut chart
+let summaryChart;  // For Chart.js pie chart
+
+// ✅ Helper: formatTaka
+function formatTaka(value) {
+  return `৳ ${value.toLocaleString("bn-BD")}`;
+}
+
+// ✅ Generate Category-wise map (used in ApexCharts)
 function generateCategoryMap(transactions, filterType, type) {
   const map = {};
   transactions.forEach(txn => {
@@ -26,6 +31,7 @@ function generateCategoryMap(transactions, filterType, type) {
     }, {});
 }
 
+// ✅ Renders ApexCharts donut chart
 function renderChart(transactions, filterType = "all") {
   const incomeMap = generateCategoryMap(transactions, filterType, "income");
   const expenseMap = generateCategoryMap(transactions, filterType, "expense");
@@ -46,41 +52,44 @@ function renderChart(transactions, filterType = "all") {
   const colors = [...incomeColors, ...expenseColors];
 
   const options = {
-        chart: {
-          type: 'donut',
-          height: 420
-        },
-        series: series,
-        labels: labels,
-        colors: colors,
-        legend: { position: 'bottom' },
-        dataLabels: {
-          enabled: true,
-          formatter: val => `${val.toFixed(1)}%`
-        },
-        tooltip: {
-          y: {
-            formatter: val => `৳ ${val.toLocaleString("bn-BD")}`
-          }
-        },
-        plotOptions: {
-          pie: {
-            donut: {
-              size: '65%',
-              labels: {
-                show: true,
-                total: {
-                  show: true,
-                  label: totalLabel,
-                  formatter: function () {
-                    return `৳ ${displayTotal.toLocaleString("bn-BD")}`;
-                  }
-                }
+    chart: {
+      type: 'donut',
+      height: 420
+    },
+    series: series,
+    labels: labels,
+    colors: colors,
+    legend: { position: 'bottom' },
+    dataLabels: {
+      enabled: true,
+      formatter: val => `${val.toFixed(1)}%`
+    },
+    tooltip: {
+      y: {
+        formatter: val => `৳ ${val.toLocaleString("bn-BD")}`
+      }
+    },
+    plotOptions: {
+      pie: {
+        donut: {
+          size: '65%',
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              label: 'মোট',
+              formatter: function (w) {
+                const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                return `৳ ${total.toLocaleString("bn-BD")}`;
               }
             }
           }
-        }
-      };
+        },
+        expandOnClick: true,
+        offsetY: 10
+      }
+    }
+  };
 
   if (chartInstance) {
     chartInstance.updateOptions(options);
@@ -91,6 +100,7 @@ function renderChart(transactions, filterType = "all") {
   }
 }
 
+// ✅ Renders Chart.js pie chart summary
 function renderSummaryChart(titlePrefix, income, expense) {
   const ctx = document.getElementById("summaryChart").getContext("2d");
 
@@ -114,7 +124,6 @@ function renderSummaryChart(titlePrefix, income, expense) {
     options: {
       responsive: true,
       plugins: {
-        // Tooltip: টাকা বড় ফন্টে
         tooltip: {
           callbacks: {
             label: function(context) {
@@ -124,16 +133,14 @@ function renderSummaryChart(titlePrefix, income, expense) {
             },
             labelTextColor: () => '#ffeb3b',
             titleFont: { size: 18 },
-            bodyFont: { size: 18 } // বড় ফন্টে টাকা
+            bodyFont: { size: 18 }
           }
         },
-        // Title
         title: {
           display: true,
           text: `${titlePrefix}`,
           font: { size: 18 }
         },
-        // Percent display inside slices
         datalabels: {
           color: "#000",
           font: {
@@ -149,11 +156,10 @@ function renderSummaryChart(titlePrefix, income, expense) {
         },
         legend: {
           labels: {
-            font: { size: 18}
+            font: { size: 18 }
           }
         }
       }
-    },
-    plugins: [ChartDataLabels]
+    }
   });
 }
