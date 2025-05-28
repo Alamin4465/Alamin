@@ -1,16 +1,111 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
-  <title>রেজিস্ট্রেশন</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>নিবন্ধন</title>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script src="firebase-config.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #a1c4fd, #c2e9fb);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .register-box {
+      background: #ffffff;
+      padding: 40px 30px;
+      border-radius: 14px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .register-box h2 {
+      text-align: center;
+      color: #2d3436;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    .register-box input,
+    .register-box select {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .register-box input:focus,
+    .register-box select:focus {
+      border-color: #0984e3;
+      outline: none;
+      box-shadow: 0 0 6px rgba(9, 132, 227, 0.3);
+    }
+
+    .register-box button {
+      width: 100%;
+      padding: 14px;
+      background: #0984e3;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .register-box button:hover {
+      background: #0652dd;
+    }
+
+    .register-box p {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .register-box a {
+      color: #0984e3;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .register-box a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 400px) {
+      .register-box {
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
+
+  <div class="register-box">
     <h2>নিবন্ধন ফর্ম</h2>
     <form id="registerForm">
       <input type="text" id="name" placeholder="নাম" required>
