@@ -9,7 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
+	<script src="firebase-config.js"></script>
   <style>
     * {
       margin: 0; padding: 0; box-sizing: border-box;
@@ -146,18 +146,6 @@
   </div>
 
   <script>
-    // Firebase config এখানে বসাও (firebase-config.js থেকে অথবা সরাসরি)
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
 
     // DOM elements
     const form = document.getElementById('registerForm');
