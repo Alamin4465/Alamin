@@ -214,37 +214,3 @@ alert("লগইন ব্যর্থ: " + error.message);
     // প্রথমে চেক করো যেন বাটন ডিসেবল থাকে
     checkFormValidity();
 
-// login-register.js
-
-const resetForm = document.getElementById('resetForm');
-const resetEmail = document.getElementById('resetEmail');
-const resetMessage = document.getElementById('resetMessage');
-
-resetForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  resetMessage.textContent = '';
-  resetMessage.style.color = 'black';
-
-  const email = resetEmail.value.trim();
-
-  if (!email) {
-    resetMessage.style.color = 'red';
-    resetMessage.textContent = 'ইমেইল লিখুন';
-    return;
-  }
-
-  try {
-    await firebase.auth().sendPasswordResetEmail(email);
-    resetMessage.style.color = 'green';
-    resetMessage.textContent = 'পাসওয়ার্ড রিসেট লিঙ্ক ইমেইলে পাঠানো হয়েছে!';
-  } catch (error) {
-    resetMessage.style.color = 'red';
-    if (error.code === 'auth/user-not-found') {
-      resetMessage.textContent = 'এই ইমেইলের কোনো ব্যবহারকারী নেই।';
-    } else if (error.code === 'auth/invalid-email') {
-      resetMessage.textContent = 'ইমেইলটি সঠিক নয়।';
-    } else {
-      resetMessage.textContent = error.message;
-    }
-  }
-});
