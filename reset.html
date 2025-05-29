@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>পাসওয়ার্ড রিসেট</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>পাসওয়ার্ড রিসেট</h2>
+    <form id="resetForm">
+      <label for="resetEmail">ইমেইল লিখুন:</label>
+      <input type="email" id="resetEmail" required placeholder="আপনার ইমেইল দিন">
+      <button type="submit">রিসেট লিঙ্ক পাঠান</button>
+      <p id="resetMessage"></p>
+    </form>
+    <p><a href="login.html">← লগইন পাতায় ফিরে যান</a></p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+  <!-- Your Firebase config -->
+  <script src="firebase-config.js"></script>
+
+  <!-- Password reset logic -->
+  <script src="reset.js"></script>
+</body>
+</html>
