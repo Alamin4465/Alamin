@@ -213,3 +213,27 @@ alert("লগইন ব্যর্থ: " + error.message);
 
     // প্রথমে চেক করো যেন বাটন ডিসেবল থাকে
     checkFormValidity();
+
+
+document.getElementById('resetForm')?.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById('resetEmail').value.trim();
+  const resetMessage = document.getElementById('resetMessage');
+
+  firebase.auth().sendPasswordResetEmail(email)
+    .then(() => {
+      resetMessage.style.color = 'green';
+      resetMessage.textContent = 'রিসেট লিঙ্ক পাঠানো হয়েছে! আপনার ইমেইল চেক করুন।';
+    })
+    .catch((error) => {
+      resetMessage.style.color = 'red';
+      if (error.code === 'auth/user-not-found') {
+        resetMessage.textContent = 'এই ইমেইলের কোন ব্যবহারকারী পাওয়া যায়নি।';
+      } else if (error.code === 'auth/invalid-email') {
+        resetMessage.textContent = 'সঠিক ইমেইল লিখুন।';
+      } else {
+        resetMessage.textContent = 'ত্রুটি: ' + error.message;
+      }
+    });
+});
