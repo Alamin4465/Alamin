@@ -214,26 +214,37 @@ alert("লগইন ব্যর্থ: " + error.message);
     // প্রথমে চেক করো যেন বাটন ডিসেবল থাকে
     checkFormValidity();
 
+// login-register.js
 
-document.getElementById('resetForm')?.addEventListener('submit', function (e) {
+const resetForm = document.getElementById('resetForm');
+const resetEmail = document.getElementById('resetEmail');
+const resetMessage = document.getElementById('resetMessage');
+
+resetForm.addEventListener('submit', async (e) => {
   e.preventDefault();
+  resetMessage.textContent = '';
+  resetMessage.style.color = 'black';
 
-  const email = document.getElementById('resetEmail').value.trim();
-  const resetMessage = document.getElementById('resetMessage');
+  const email = resetEmail.value.trim();
 
-  firebase.auth().sendPasswordResetEmail(email)
-    .then(() => {
-      resetMessage.style.color = 'green';
-      resetMessage.textContent = 'রিসেট লিঙ্ক পাঠানো হয়েছে! আপনার ইমেইল চেক করুন।';
-    })
-    .catch((error) => {
-      resetMessage.style.color = 'red';
-      if (error.code === 'auth/user-not-found') {
-        resetMessage.textContent = 'এই ইমেইলের কোন ব্যবহারকারী পাওয়া যায়নি।';
-      } else if (error.code === 'auth/invalid-email') {
-        resetMessage.textContent = 'সঠিক ইমেইল লিখুন।';
-      } else {
-        resetMessage.textContent = 'ত্রুটি: ' + error.message;
-      }
-    });
+  if (!email) {
+    resetMessage.style.color = 'red';
+    resetMessage.textContent = 'ইমেইল লিখুন';
+    return;
+  }
+
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+    resetMessage.style.color = 'green';
+    resetMessage.textContent = 'পাসওয়ার্ড রিসেট লিঙ্ক ইমেইলে পাঠানো হয়েছে!';
+  } catch (error) {
+    resetMessage.style.color = 'red';
+    if (error.code === 'auth/user-not-found') {
+      resetMessage.textContent = 'এই ইমেইলের কোনো ব্যবহারকারী নেই।';
+    } else if (error.code === 'auth/invalid-email') {
+      resetMessage.textContent = 'ইমেইলটি সঠিক নয়।';
+    } else {
+      resetMessage.textContent = error.message;
+    }
+  }
 });
